@@ -46,17 +46,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="12.cs">
+    <Compile Include="AdminSignIn.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="12.Designer.cs">
-      <DependentUpon>12.cs</DependentUpon>
+    <Compile Include="AdminSignIn.Designer.cs">
+      <DependentUpon>AdminSignIn.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="12.resx">
-      <DependentUpon>12.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
