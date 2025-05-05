@@ -39,211 +39,217 @@ namespace TravelEaseForms
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SP_Registration));
-            label3 = new Label();
-            label4 = new Label();
-            label5 = new Label();
-            label6 = new Label();
-            label7 = new Label();
-            btnRegister = new Button();
-            textBox1 = new TextBox();
-            textBox2 = new TextBox();
-            textBox3 = new TextBox();
-            textBox4 = new TextBox();
-            textBox5 = new TextBox();
-            label2 = new Label();
-            label1 = new Label();
-            panelBody = new Panel();
-            panelHeader = new Panel();
-            pictureBox1 = new PictureBox();
-            panelBody.SuspendLayout();
-            panelHeader.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
-            SuspendLayout();
+            this.label3 = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
+            this.label6 = new System.Windows.Forms.Label();
+            this.label7 = new System.Windows.Forms.Label();
+            this.btnRegister = new System.Windows.Forms.Button();
+            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.textBox2 = new System.Windows.Forms.TextBox();
+            this.textBox3 = new System.Windows.Forms.TextBox();
+            this.textBox4 = new System.Windows.Forms.TextBox();
+            this.textBox5 = new System.Windows.Forms.TextBox();
+            this.label2 = new System.Windows.Forms.Label();
+            this.label1 = new System.Windows.Forms.Label();
+            this.panelBody = new System.Windows.Forms.Panel();
+            this.panelHeader = new System.Windows.Forms.Panel();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.panelBody.SuspendLayout();
+            this.panelHeader.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            this.SuspendLayout();
             // 
             // label3
             // 
-            label3.AutoSize = true;
-            label3.Font = new Font("Montserrat Medium", 10.2F, FontStyle.Bold);
-            label3.ForeColor = Color.FromArgb(51, 51, 51);
-            label3.Location = new Point(46, 20);
-            label3.Name = "label3";
-            label3.Size = new Size(64, 27);
-            label3.TabIndex = 2;
-            label3.Text = "Name";
+            this.label3.AutoSize = true;
+            this.label3.Font = new System.Drawing.Font("Montserrat Medium", 10.2F, System.Drawing.FontStyle.Bold);
+            this.label3.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(51)))), ((int)(((byte)(51)))), ((int)(((byte)(51)))));
+            this.label3.Location = new System.Drawing.Point(46, 16);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(64, 27);
+            this.label3.TabIndex = 2;
+            this.label3.Text = "Name";
             // 
             // label4
             // 
-            label4.AutoSize = true;
-            label4.Font = new Font("Montserrat Medium", 10.2F, FontStyle.Bold);
-            label4.ForeColor = Color.FromArgb(51, 51, 51);
-            label4.Location = new Point(46, 67);
-            label4.Name = "label4";
-            label4.Size = new Size(61, 27);
-            label4.TabIndex = 3;
-            label4.Text = "Email";
+            this.label4.AutoSize = true;
+            this.label4.Font = new System.Drawing.Font("Montserrat Medium", 10.2F, System.Drawing.FontStyle.Bold);
+            this.label4.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(51)))), ((int)(((byte)(51)))), ((int)(((byte)(51)))));
+            this.label4.Location = new System.Drawing.Point(46, 54);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(61, 27);
+            this.label4.TabIndex = 3;
+            this.label4.Text = "Email";
             // 
             // label5
             // 
-            label5.AutoSize = true;
-            label5.Font = new Font("Montserrat Medium", 10.2F, FontStyle.Bold);
-            label5.ForeColor = Color.FromArgb(51, 51, 51);
-            label5.Location = new Point(46, 111);
-            label5.Name = "label5";
-            label5.Size = new Size(83, 27);
-            label5.TabIndex = 4;
-            label5.Text = "Address";
+            this.label5.AutoSize = true;
+            this.label5.Font = new System.Drawing.Font("Montserrat Medium", 10.2F, System.Drawing.FontStyle.Bold);
+            this.label5.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(51)))), ((int)(((byte)(51)))), ((int)(((byte)(51)))));
+            this.label5.Location = new System.Drawing.Point(46, 89);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(83, 27);
+            this.label5.TabIndex = 4;
+            this.label5.Text = "Address";
             // 
             // label6
             // 
-            label6.AutoSize = true;
-            label6.Font = new Font("Montserrat Medium", 10.2F, FontStyle.Bold);
-            label6.ForeColor = Color.FromArgb(51, 51, 51);
-            label6.Location = new Point(46, 162);
-            label6.Name = "label6";
-            label6.Size = new Size(95, 27);
-            label6.TabIndex = 5;
-            label6.Text = "City Code";
+            this.label6.AutoSize = true;
+            this.label6.Font = new System.Drawing.Font("Montserrat Medium", 10.2F, System.Drawing.FontStyle.Bold);
+            this.label6.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(51)))), ((int)(((byte)(51)))), ((int)(((byte)(51)))));
+            this.label6.Location = new System.Drawing.Point(46, 130);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(95, 27);
+            this.label6.TabIndex = 5;
+            this.label6.Text = "City Code";
             // 
             // label7
             // 
-            label7.AutoSize = true;
-            label7.Font = new Font("Montserrat Medium", 10.2F, FontStyle.Bold);
-            label7.ForeColor = Color.FromArgb(51, 51, 51);
-            label7.Location = new Point(46, 210);
-            label7.Name = "label7";
-            label7.Size = new Size(81, 27);
-            label7.TabIndex = 6;
-            label7.Text = "Contact";
+            this.label7.AutoSize = true;
+            this.label7.Font = new System.Drawing.Font("Montserrat Medium", 10.2F, System.Drawing.FontStyle.Bold);
+            this.label7.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(51)))), ((int)(((byte)(51)))), ((int)(((byte)(51)))));
+            this.label7.Location = new System.Drawing.Point(46, 168);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(81, 27);
+            this.label7.TabIndex = 6;
+            this.label7.Text = "Contact";
             // 
             // btnRegister
             // 
-            btnRegister.Font = new Font("Montserrat Medium", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            btnRegister.ForeColor = Color.FromArgb(51, 51, 51);
-            btnRegister.Location = new Point(208, 261);
-            btnRegister.Name = "btnRegister";
-            btnRegister.Size = new Size(94, 29);
-            btnRegister.TabIndex = 7;
-            btnRegister.Text = "Register";
-            btnRegister.UseVisualStyleBackColor = true;
-            btnRegister.Click += button1_Click;
+            this.btnRegister.Font = new System.Drawing.Font("Montserrat Medium", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnRegister.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(51)))), ((int)(((byte)(51)))), ((int)(((byte)(51)))));
+            this.btnRegister.Location = new System.Drawing.Point(208, 209);
+            this.btnRegister.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.btnRegister.Name = "btnRegister";
+            this.btnRegister.Size = new System.Drawing.Size(94, 23);
+            this.btnRegister.TabIndex = 7;
+            this.btnRegister.Text = "Register";
+            this.btnRegister.UseVisualStyleBackColor = true;
+            this.btnRegister.Click += new System.EventHandler(this.btnRegister_Click);
             // 
             // textBox1
             // 
-            textBox1.Location = new Point(166, 20);
-            textBox1.Name = "textBox1";
-            textBox1.Size = new Size(272, 27);
-            textBox1.TabIndex = 8;
+            this.textBox1.Location = new System.Drawing.Point(166, 16);
+            this.textBox1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.textBox1.Name = "textBox1";
+            this.textBox1.Size = new System.Drawing.Size(272, 22);
+            this.textBox1.TabIndex = 8;
             // 
             // textBox2
             // 
-            textBox2.Location = new Point(166, 67);
-            textBox2.Name = "textBox2";
-            textBox2.Size = new Size(272, 27);
-            textBox2.TabIndex = 9;
+            this.textBox2.Location = new System.Drawing.Point(166, 54);
+            this.textBox2.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.textBox2.Name = "textBox2";
+            this.textBox2.Size = new System.Drawing.Size(272, 22);
+            this.textBox2.TabIndex = 9;
             // 
             // textBox3
             // 
-            textBox3.Location = new Point(166, 210);
-            textBox3.Name = "textBox3";
-            textBox3.Size = new Size(272, 27);
-            textBox3.TabIndex = 10;
+            this.textBox3.Location = new System.Drawing.Point(166, 168);
+            this.textBox3.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.textBox3.Name = "textBox3";
+            this.textBox3.Size = new System.Drawing.Size(272, 22);
+            this.textBox3.TabIndex = 10;
             // 
             // textBox4
             // 
-            textBox4.Location = new Point(166, 111);
-            textBox4.Name = "textBox4";
-            textBox4.Size = new Size(272, 27);
-            textBox4.TabIndex = 11;
+            this.textBox4.Location = new System.Drawing.Point(166, 89);
+            this.textBox4.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.textBox4.Name = "textBox4";
+            this.textBox4.Size = new System.Drawing.Size(272, 22);
+            this.textBox4.TabIndex = 11;
             // 
             // textBox5
             // 
-            textBox5.Location = new Point(166, 162);
-            textBox5.Name = "textBox5";
-            textBox5.Size = new Size(272, 27);
-            textBox5.TabIndex = 12;
-            textBox5.TextChanged += textBox5_TextChanged;
+            this.textBox5.Location = new System.Drawing.Point(166, 130);
+            this.textBox5.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.textBox5.Name = "textBox5";
+            this.textBox5.Size = new System.Drawing.Size(272, 22);
+            this.textBox5.TabIndex = 12;
             // 
             // label2
             // 
-            label2.AutoSize = true;
-            label2.Font = new Font("Montserrat ExtraBold", 16.2F, FontStyle.Bold);
-            label2.ForeColor = Color.FromArgb(51, 51, 51);
-            label2.Location = new Point(177, 56);
-            label2.Name = "label2";
-            label2.Size = new Size(504, 44);
-            label2.TabIndex = 1;
-            label2.Text = "Join as a Service Provider today!";
-            label2.Click += label2_Click;
+            this.label2.AutoSize = true;
+            this.label2.Font = new System.Drawing.Font("Montserrat ExtraBold", 16.2F, System.Drawing.FontStyle.Bold);
+            this.label2.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(51)))), ((int)(((byte)(51)))), ((int)(((byte)(51)))));
+            this.label2.Location = new System.Drawing.Point(177, 45);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(504, 44);
+            this.label2.TabIndex = 1;
+            this.label2.Text = "Join as a Service Provider today!";
             // 
             // label1
             // 
-            label1.AutoSize = true;
-            label1.Font = new Font("Montserrat ExtraBold", 16.2F, FontStyle.Bold);
-            label1.ForeColor = Color.FromArgb(51, 51, 51);
-            label1.Location = new Point(117, 12);
-            label1.Name = "label1";
-            label1.Size = new Size(645, 44);
-            label1.TabIndex = 0;
-            label1.Text = "Be the gateway to unforgettable journeys";
-            label1.Click += label1_Click_1;
+            this.label1.AutoSize = true;
+            this.label1.Font = new System.Drawing.Font("Montserrat ExtraBold", 16.2F, System.Drawing.FontStyle.Bold);
+            this.label1.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(51)))), ((int)(((byte)(51)))), ((int)(((byte)(51)))));
+            this.label1.Location = new System.Drawing.Point(117, 10);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(645, 44);
+            this.label1.TabIndex = 0;
+            this.label1.Text = "Be the gateway to unforgettable journeys";
             // 
             // panelBody
             // 
-            panelBody.Controls.Add(textBox5);
-            panelBody.Controls.Add(textBox4);
-            panelBody.Controls.Add(textBox3);
-            panelBody.Controls.Add(textBox2);
-            panelBody.Controls.Add(textBox1);
-            panelBody.Controls.Add(btnRegister);
-            panelBody.Controls.Add(label7);
-            panelBody.Controls.Add(label6);
-            panelBody.Controls.Add(label5);
-            panelBody.Controls.Add(label4);
-            panelBody.Controls.Add(label3);
-            panelBody.Location = new Point(157, 130);
-            panelBody.Name = "panelBody";
-            panelBody.Size = new Size(483, 313);
-            panelBody.TabIndex = 13;
+            this.panelBody.Controls.Add(this.textBox5);
+            this.panelBody.Controls.Add(this.textBox4);
+            this.panelBody.Controls.Add(this.textBox3);
+            this.panelBody.Controls.Add(this.textBox2);
+            this.panelBody.Controls.Add(this.textBox1);
+            this.panelBody.Controls.Add(this.btnRegister);
+            this.panelBody.Controls.Add(this.label7);
+            this.panelBody.Controls.Add(this.label6);
+            this.panelBody.Controls.Add(this.label5);
+            this.panelBody.Controls.Add(this.label4);
+            this.panelBody.Controls.Add(this.label3);
+            this.panelBody.Location = new System.Drawing.Point(157, 104);
+            this.panelBody.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.panelBody.Name = "panelBody";
+            this.panelBody.Size = new System.Drawing.Size(483, 250);
+            this.panelBody.TabIndex = 13;
             // 
             // panelHeader
             // 
-            panelHeader.Controls.Add(pictureBox1);
-            panelHeader.Controls.Add(label2);
-            panelHeader.Controls.Add(label1);
-            panelHeader.Dock = DockStyle.Top;
-            panelHeader.Location = new Point(0, 0);
-            panelHeader.Name = "panelHeader";
-            panelHeader.Size = new Size(800, 125);
-            panelHeader.TabIndex = 14;
+            this.panelHeader.Controls.Add(this.pictureBox1);
+            this.panelHeader.Controls.Add(this.label2);
+            this.panelHeader.Controls.Add(this.label1);
+            this.panelHeader.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panelHeader.Location = new System.Drawing.Point(0, 0);
+            this.panelHeader.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.panelHeader.Name = "panelHeader";
+            this.panelHeader.Size = new System.Drawing.Size(800, 100);
+            this.panelHeader.TabIndex = 14;
             // 
             // pictureBox1
             // 
-            pictureBox1.BackColor = Color.Transparent;
-            pictureBox1.Image = (Image)resources.GetObject("pictureBox1.Image");
-            pictureBox1.Location = new Point(3, 10);
-            pictureBox1.Name = "pictureBox1";
-            pictureBox1.Size = new Size(108, 105);
-            pictureBox1.TabIndex = 15;
-            pictureBox1.TabStop = false;
-            pictureBox1.Click += pictureBox1_Click;
+            this.pictureBox1.BackColor = System.Drawing.Color.Transparent;
+            this.pictureBox1.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox1.Image")));
+            this.pictureBox1.Location = new System.Drawing.Point(3, 8);
+            this.pictureBox1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(108, 84);
+            this.pictureBox1.TabIndex = 15;
+            this.pictureBox1.TabStop = false;
             // 
-            // Form1
+            // SP_Registration
             // 
-            AutoScaleDimensions = new SizeF(8F, 20F);
-            AutoScaleMode = AutoScaleMode.Font;
-            BackColor = Color.FromArgb(250, 241, 230);
-            ClientSize = new Size(800, 450);
-            Controls.Add(panelHeader);
-            Controls.Add(panelBody);
-            Name = "Form1";
-            Text = "Form1";
-            Load += Form1_Load;
-            panelBody.ResumeLayout(false);
-            panelBody.PerformLayout();
-            panelHeader.ResumeLayout(false);
-            panelHeader.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
-            ResumeLayout(false);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(250)))), ((int)(((byte)(241)))), ((int)(((byte)(230)))));
+            this.ClientSize = new System.Drawing.Size(800, 360);
+            this.Controls.Add(this.panelHeader);
+            this.Controls.Add(this.panelBody);
+            this.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.Name = "SP_Registration";
+            this.Text = "Form1";
+            this.panelBody.ResumeLayout(false);
+            this.panelBody.PerformLayout();
+            this.panelHeader.ResumeLayout(false);
+            this.panelHeader.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+            this.ResumeLayout(false);
+
         }
 
         #endregion

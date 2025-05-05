@@ -106,5 +106,18 @@ namespace TravelEaseForms
         {
             
         }
+
+        private void btnRegister_Click(object sender, EventArgs e)
+        {
+            this.Hide();
+
+            var dashboard = new SP_Main();
+      
+            dashboard.FormClosed += (s, args) => this.Close();
+
+            dashboard.Show();
+        }
+        
+
     }
 }
