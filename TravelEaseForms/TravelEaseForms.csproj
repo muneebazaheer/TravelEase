@@ -46,9 +46,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AdminSignIn.Designer.cs">
-      <DependentUpon>AdminSignIn.cs</DependentUpon>
-    </Compile>
     <Compile Include="Forms\TravellerLogin.cs">
       <SubType>Form</SubType>
     </Compile>
