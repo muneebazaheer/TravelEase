@@ -46,14 +46,35 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Forms\AdminDashBoard.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\AdminDashBoard.Designer.cs">
+      <DependentUpon>AdminDashBoard.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\AdminSignIn.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\AdminSignIn.Designer.cs">
       <DependentUpon>AdminSignIn.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\OperatorManagment.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\OperatorManagment.Designer.cs">
+      <DependentUpon>OperatorManagment.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\UserManagementMenu.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\UserManagementMenu.Designer.cs">
+      <DependentUpon>UserManagementMenu.cs</DependentUpon>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="Forms\AdminDashBoard.resx">
+      <DependentUpon>AdminDashBoard.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\AdminSignIn.resx">
       <DependentUpon>AdminSignIn.cs</DependentUpon>
     </EmbeddedResource>
