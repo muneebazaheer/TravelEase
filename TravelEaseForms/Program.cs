@@ -17,7 +17,9 @@ namespace TravelEaseForms
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new TravellerLogin());
+            //Application.Run(new TravellerLogin());
+            Application.Run(new TravellerRegistration());
+
         }
     }
 }
