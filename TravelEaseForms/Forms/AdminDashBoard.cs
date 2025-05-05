@@ -111,8 +111,8 @@ namespace TravelEaseForms.Forms
             // 
             this.viewUsersButton.Text = "View Users";
             this.addUserButton.Text = "Add User";
-            this.viewOperatorsButton.Text = "View Operators";
-            this.generateReportsButton.Text = "Generate Reports";
+            this.viewOperatorsButton.Text = "View_Operators";
+            this.generateReportsButton.Text = "Generate_Reports";
 
             this.viewUsersButton.Location = new System.Drawing.Point(20, 450);
             this.addUserButton.Location = new System.Drawing.Point(140, 450);
@@ -128,7 +128,7 @@ namespace TravelEaseForms.Forms
             // 
             // AdminDashBoard
             // 
-            this.ClientSize = new System.Drawing.Size(800, 500);
+            this.ClientSize = new System.Drawing.Size(1000, 500);
             this.Controls.Add(this.generateReportsButton);
             this.Controls.Add(this.viewOperatorsButton);
             this.Controls.Add(this.addUserButton);
