@@ -117,7 +117,10 @@ namespace TravelEaseForms
 
             dashboard.Show();
         }
-        
 
+        private void SP_Registration_Load(object sender, EventArgs e)
+        {
+
+        }
     }
 }
