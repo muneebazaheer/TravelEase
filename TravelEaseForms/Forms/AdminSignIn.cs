@@ -16,5 +16,35 @@ namespace TravelEaseForms.Forms
         {
             InitializeComponent();
         }
+
+        private void AdminSignIn_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        private void textBoxEmail_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void textBoxPassword_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void buttonLogin_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void buttonExit_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void buttonExit_Click_1(object sender, EventArgs e)
+        {
+
+        }
     }
 }
