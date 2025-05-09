@@ -53,17 +53,10 @@
       <DependentUpon>AdminDashBoard.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\AdminSignIn.cs">
-    <Compile Include="Forms\SP_Main.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\SP_Main.Designer.cs">
-      <DependentUpon>SP_Main.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\SP_Registration.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\SP_Registration.Designer.cs">
-      <DependentUpon>SP_Registration.cs</DependentUpon>
+    <Compile Include="Forms\AdminSignIn.Designer.cs">
+      <DependentUpon>AdminSignIn.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\OperatorManagment.cs">
       <SubType>Form</SubType>
@@ -79,12 +72,6 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="Forms\SP_Main.resx">
-      <DependentUpon>SP_Main.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\SP_Registration.resx">
-      <DependentUpon>SP_Registration.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Forms\AdminDashBoard.resx">
       <DependentUpon>AdminDashBoard.cs</DependentUpon>
     </EmbeddedResource>
