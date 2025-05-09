@@ -15,8 +15,11 @@ namespace TravelEaseForms
         [STAThread]
         static void Main()
         {
+
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
+
+            Application.Run(new SP_Registration());
             Application.Run(new AdminSignIn());
             Application.Run(new AdminDashBoard());
         }
