@@ -103,8 +103,7 @@ namespace TravelEaseForms
 
         private bool validatePassword(string data)
         {
-            if (string.IsNullOrWhiteSpace(data) ||
-                data.Length < 8 ||
+             if (data.Length < 8 ||
                 !data.Any(char.IsUpper) ||
                 !data.Any(char.IsLower) ||
                 !data.Any(char.IsDigit) ||
@@ -287,7 +286,6 @@ namespace TravelEaseForms
             dashboard.Show();
         }
 
-<<<<<<< HEAD
         private void textBox2_TextChanged(object sender, EventArgs e)
         {
 
@@ -324,9 +322,21 @@ namespace TravelEaseForms
         }
 
         private void textBox6_TextChanged(object sender, EventArgs e)
-=======
-        private void SP_Registration_Load(object sender, EventArgs e)
->>>>>>> bf8059447f2e23e511f05c024b11c73738b46067
+        {
+
+        }
+
+        private void panelBody_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void label10_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label5_Click(object sender, EventArgs e)
         {
 
         }
