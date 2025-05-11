@@ -53,8 +53,12 @@ namespace TravelEaseForms
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.panelBody = new System.Windows.Forms.Panel();
+            this.linkLabel1 = new System.Windows.Forms.LinkLabel();
+            this.label8 = new System.Windows.Forms.Label();
             this.panelHeader = new System.Windows.Forms.Panel();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.textBox6 = new System.Windows.Forms.TextBox();
+            this.label9 = new System.Windows.Forms.Label();
             this.panelBody.SuspendLayout();
             this.panelHeader.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -70,6 +74,7 @@ namespace TravelEaseForms
             this.label3.Size = new System.Drawing.Size(64, 27);
             this.label3.TabIndex = 2;
             this.label3.Text = "Name";
+            this.label3.Click += new System.EventHandler(this.label3_Click);
             // 
             // label4
             // 
@@ -87,7 +92,7 @@ namespace TravelEaseForms
             this.label5.AutoSize = true;
             this.label5.Font = new System.Drawing.Font("Montserrat Medium", 10.2F, System.Drawing.FontStyle.Bold);
             this.label5.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(51)))), ((int)(((byte)(51)))), ((int)(((byte)(51)))));
-            this.label5.Location = new System.Drawing.Point(46, 89);
+            this.label5.Location = new System.Drawing.Point(46, 141);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(83, 27);
             this.label5.TabIndex = 4;
@@ -98,7 +103,7 @@ namespace TravelEaseForms
             this.label6.AutoSize = true;
             this.label6.Font = new System.Drawing.Font("Montserrat Medium", 10.2F, System.Drawing.FontStyle.Bold);
             this.label6.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(51)))), ((int)(((byte)(51)))), ((int)(((byte)(51)))));
-            this.label6.Location = new System.Drawing.Point(46, 130);
+            this.label6.Location = new System.Drawing.Point(46, 182);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(95, 27);
             this.label6.TabIndex = 5;
@@ -109,7 +114,7 @@ namespace TravelEaseForms
             this.label7.AutoSize = true;
             this.label7.Font = new System.Drawing.Font("Montserrat Medium", 10.2F, System.Drawing.FontStyle.Bold);
             this.label7.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(51)))), ((int)(((byte)(51)))), ((int)(((byte)(51)))));
-            this.label7.Location = new System.Drawing.Point(46, 168);
+            this.label7.Location = new System.Drawing.Point(46, 220);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(81, 27);
             this.label7.TabIndex = 6;
@@ -119,10 +124,10 @@ namespace TravelEaseForms
             // 
             this.btnRegister.Font = new System.Drawing.Font("Montserrat Medium", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnRegister.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(51)))), ((int)(((byte)(51)))), ((int)(((byte)(51)))));
-            this.btnRegister.Location = new System.Drawing.Point(208, 209);
+            this.btnRegister.Location = new System.Drawing.Point(209, 265);
             this.btnRegister.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnRegister.Name = "btnRegister";
-            this.btnRegister.Size = new System.Drawing.Size(94, 23);
+            this.btnRegister.Size = new System.Drawing.Size(94, 37);
             this.btnRegister.TabIndex = 7;
             this.btnRegister.Text = "Register";
             this.btnRegister.UseVisualStyleBackColor = true;
@@ -135,6 +140,7 @@ namespace TravelEaseForms
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(272, 22);
             this.textBox1.TabIndex = 8;
+            this.textBox1.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
             // 
             // textBox2
             // 
@@ -143,30 +149,34 @@ namespace TravelEaseForms
             this.textBox2.Name = "textBox2";
             this.textBox2.Size = new System.Drawing.Size(272, 22);
             this.textBox2.TabIndex = 9;
+            this.textBox2.TextChanged += new System.EventHandler(this.textBox2_TextChanged);
             // 
             // textBox3
             // 
-            this.textBox3.Location = new System.Drawing.Point(166, 168);
+            this.textBox3.Location = new System.Drawing.Point(166, 220);
             this.textBox3.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.textBox3.Name = "textBox3";
             this.textBox3.Size = new System.Drawing.Size(272, 22);
             this.textBox3.TabIndex = 10;
+            this.textBox3.TextChanged += new System.EventHandler(this.textBox3_TextChanged);
             // 
             // textBox4
             // 
-            this.textBox4.Location = new System.Drawing.Point(166, 89);
+            this.textBox4.Location = new System.Drawing.Point(166, 141);
             this.textBox4.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.textBox4.Name = "textBox4";
             this.textBox4.Size = new System.Drawing.Size(272, 22);
             this.textBox4.TabIndex = 11;
+            this.textBox4.TextChanged += new System.EventHandler(this.textBox4_TextChanged);
             // 
             // textBox5
             // 
-            this.textBox5.Location = new System.Drawing.Point(166, 130);
+            this.textBox5.Location = new System.Drawing.Point(166, 182);
             this.textBox5.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.textBox5.Name = "textBox5";
             this.textBox5.Size = new System.Drawing.Size(272, 22);
             this.textBox5.TabIndex = 12;
+            this.textBox5.TextChanged += new System.EventHandler(this.textBox5_TextChanged_1);
             // 
             // label2
             // 
@@ -192,7 +202,11 @@ namespace TravelEaseForms
             // 
             // panelBody
             // 
+            this.panelBody.Controls.Add(this.label9);
+            this.panelBody.Controls.Add(this.textBox6);
+            this.panelBody.Controls.Add(this.linkLabel1);
             this.panelBody.Controls.Add(this.textBox5);
+            this.panelBody.Controls.Add(this.label8);
             this.panelBody.Controls.Add(this.textBox4);
             this.panelBody.Controls.Add(this.textBox3);
             this.panelBody.Controls.Add(this.textBox2);
@@ -206,8 +220,30 @@ namespace TravelEaseForms
             this.panelBody.Location = new System.Drawing.Point(157, 104);
             this.panelBody.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.panelBody.Name = "panelBody";
-            this.panelBody.Size = new System.Drawing.Size(483, 250);
+            this.panelBody.Size = new System.Drawing.Size(483, 364);
             this.panelBody.TabIndex = 13;
+            // 
+            // linkLabel1
+            // 
+            this.linkLabel1.AutoSize = true;
+            this.linkLabel1.Font = new System.Drawing.Font("Montserrat", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.linkLabel1.Location = new System.Drawing.Point(234, 335);
+            this.linkLabel1.Name = "linkLabel1";
+            this.linkLabel1.Size = new System.Drawing.Size(46, 20);
+            this.linkLabel1.TabIndex = 16;
+            this.linkLabel1.TabStop = true;
+            this.linkLabel1.Text = "Login";
+            this.linkLabel1.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabel1_LinkClicked);
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Font = new System.Drawing.Font("Montserrat", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label8.Location = new System.Drawing.Point(152, 315);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(249, 20);
+            this.label8.TabIndex = 15;
+            this.label8.Text = "Already one of our service providers ? ";
             // 
             // panelHeader
             // 
@@ -232,17 +268,39 @@ namespace TravelEaseForms
             this.pictureBox1.TabIndex = 15;
             this.pictureBox1.TabStop = false;
             // 
+            // textBox6
+            // 
+            this.textBox6.Location = new System.Drawing.Point(166, 98);
+            this.textBox6.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.textBox6.Name = "textBox6";
+            this.textBox6.Size = new System.Drawing.Size(272, 22);
+            this.textBox6.TabIndex = 17;
+            this.textBox6.TextChanged += new System.EventHandler(this.textBox6_TextChanged);
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Font = new System.Drawing.Font("Montserrat Medium", 10.2F, System.Drawing.FontStyle.Bold);
+            this.label9.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(51)))), ((int)(((byte)(51)))), ((int)(((byte)(51)))));
+            this.label9.Location = new System.Drawing.Point(46, 98);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(97, 27);
+            this.label9.TabIndex = 18;
+            this.label9.Text = "Password";
+            this.label9.Click += new System.EventHandler(this.label9_Click);
+            // 
             // SP_Registration
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(250)))), ((int)(((byte)(241)))), ((int)(((byte)(230)))));
-            this.ClientSize = new System.Drawing.Size(800, 360);
+            this.ClientSize = new System.Drawing.Size(800, 475);
             this.Controls.Add(this.panelHeader);
             this.Controls.Add(this.panelBody);
             this.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.Name = "SP_Registration";
             this.Text = "Form1";
+            this.Load += new System.EventHandler(this.SP_Registration_Load);
             this.panelBody.ResumeLayout(false);
             this.panelBody.PerformLayout();
             this.panelHeader.ResumeLayout(false);
@@ -269,5 +327,9 @@ namespace TravelEaseForms
         private Panel panelBody;
         private Panel panelHeader;
         private PictureBox pictureBox1;
+        private Label label8;
+        private LinkLabel linkLabel1;
+        private Label label9;
+        private TextBox textBox6;
     }
 }

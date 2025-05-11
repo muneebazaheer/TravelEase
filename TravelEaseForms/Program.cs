@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using TravelEaseForms.Forms;
 
 namespace TravelEaseForms
 {
@@ -18,7 +19,7 @@ namespace TravelEaseForms
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            Application.Run(new SP_Registration());
+            Application.Run(new SP_Login());
         }
     }
 }

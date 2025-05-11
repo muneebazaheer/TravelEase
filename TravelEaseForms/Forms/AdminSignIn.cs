@@ -16,5 +16,10 @@ namespace TravelEaseForms.Forms
         {
             InitializeComponent();
         }
+
+        private void AdminSignIn_Load(object sender, EventArgs e)
+        {
+
+        }
     }
 }
