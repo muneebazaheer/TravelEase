@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Data.SqlClient;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -90,7 +91,54 @@ namespace TravelEaseForms.Forms
 
         private void button1_Click(object sender, EventArgs e)
         {
-            
+            string connectionString = "Data Source=DESKTOP-7HGU5BP\\SQLEXPRESS;Initial Catalog=TravelEaseDataBase;Integrated Security=True;";
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                {
+                    connection.Open();
+
+                    // Corrected query - proper JOIN syntax
+                    string query = @"SELECT u.UserID, u.Email, u.Name 
+                                   FROM Users u 
+                                   INNER JOIN ServiceProviders sp ON u.UserID = sp.UserID 
+                                   WHERE u.Email = @Email AND sp.Password = @Password";
+
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@Email", textBox1.Text);
+                        command.Parameters.AddWithValue("@Password", textBox2.Text);
+
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            if (reader.Read())
+                            {
+                                // Login successful
+                                string userName = reader["Name"].ToString();
+                                MessageBox.Show($"Welcome Back, {userName}!", "Login Successful",
+                                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                                this.Hide();
+                                var dashboard = new SP_Main();
+                                dashboard.FormClosed += (s, args) => this.Close();
+                                dashboard.Show();
+                            }
+                            else
+                            {
+                                // Login failed
+                                MessageBox.Show("Invalid email or password. Please try again.",
+                                    "Login Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                textBox2.Clear();
+                                textBox2.Focus();
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Database error: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void label3_Click(object sender, EventArgs e)
@@ -105,7 +153,6 @@ namespace TravelEaseForms.Forms
 
         private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-
             this.Hide();
             var dashboard = new SP_Registration();
             dashboard.FormClosed += (s, args) => this.Close();
@@ -113,6 +160,11 @@ namespace TravelEaseForms.Forms
         }
 
         private void panelBody_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
         {
 
         }
