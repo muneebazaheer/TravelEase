@@ -39,11 +39,11 @@
             this.label5 = new System.Windows.Forms.Label();
             this.linkLabel1 = new System.Windows.Forms.LinkLabel();
             this.panelHeader = new System.Windows.Forms.Panel();
-            this.panelBody = new System.Windows.Forms.Panel();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.panelBody = new System.Windows.Forms.Panel();
             this.panelHeader.SuspendLayout();
-            this.panelBody.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            this.panelBody.SuspendLayout();
             this.SuspendLayout();
             // 
             // label1
@@ -86,7 +86,7 @@
             // btnLogin
             // 
             this.btnLogin.Font = new System.Drawing.Font("Montserrat Medium", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnLogin.Location = new System.Drawing.Point(210, 141);
+            this.btnLogin.Location = new System.Drawing.Point(208, 148);
             this.btnLogin.Name = "btnLogin";
             this.btnLogin.Size = new System.Drawing.Size(87, 28);
             this.btnLogin.TabIndex = 4;
@@ -120,7 +120,7 @@
             // 
             this.label5.AutoSize = true;
             this.label5.Font = new System.Drawing.Font("Montserrat", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label5.Location = new System.Drawing.Point(161, 194);
+            this.label5.Location = new System.Drawing.Point(155, 192);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(181, 20);
             this.label5.TabIndex = 7;
@@ -148,6 +148,15 @@
             this.panelHeader.Size = new System.Drawing.Size(804, 117);
             this.panelHeader.TabIndex = 9;
             // 
+            // pictureBox1
+            // 
+            this.pictureBox1.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox1.Image")));
+            this.pictureBox1.Location = new System.Drawing.Point(3, 9);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(122, 105);
+            this.pictureBox1.TabIndex = 7;
+            this.pictureBox1.TabStop = false;
+            // 
             // panelBody
             // 
             this.panelBody.Controls.Add(this.linkLabel1);
@@ -163,15 +172,6 @@
             this.panelBody.TabIndex = 10;
             this.panelBody.Paint += new System.Windows.Forms.PaintEventHandler(this.panelBody_Paint);
             // 
-            // pictureBox1
-            // 
-            this.pictureBox1.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox1.Image")));
-            this.pictureBox1.Location = new System.Drawing.Point(3, 9);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(122, 105);
-            this.pictureBox1.TabIndex = 7;
-            this.pictureBox1.TabStop = false;
-            // 
             // SP_Login
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -185,9 +185,9 @@
             this.Load += new System.EventHandler(this.SP_Login_Load);
             this.panelHeader.ResumeLayout(false);
             this.panelHeader.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.panelBody.ResumeLayout(false);
             this.panelBody.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
 
         }

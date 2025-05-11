@@ -204,7 +204,24 @@ namespace TravelEaseForms
                     using (SqlTransaction transaction = connection.BeginTransaction())
                     {
                         try
-                        {
+                        {   
+                            //first check if the email is already registerd
+                            string emailCheck = @"SELECT COUNT(*) FROM Users WHERE Email = @Email";
+                            using (SqlCommand checkCommand = new SqlCommand(emailCheck, connection, transaction))
+                            {
+                                checkCommand.Parameters.AddWithValue("@Email", textBox2.Text);
+                                int emailCount = Convert.ToInt32(checkCommand.ExecuteScalar());
+
+                                if (emailCount > 0)
+                                {
+                                    transaction.Rollback();
+                                    MessageBox.Show("This email is already registered. Please use a different email.",
+                                        "Email Already Exists", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                    textBox2.Focus();
+                                    return;
+                                }
+                            }
+
                             string userId;
 
                             // Insert into Users table

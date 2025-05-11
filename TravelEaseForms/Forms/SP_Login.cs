@@ -73,6 +73,16 @@ namespace TravelEaseForms.Forms
 
             btnLogin.FlatAppearance.MouseOverBackColor = ControlPaint.Dark(sage, 0.1f);
         }
+
+        private bool checkNull(string data)
+        {
+            if (string.IsNullOrWhiteSpace(data))
+            {
+                MessageBox.Show("Please enter some data", "Empty Fields", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return true;
+            }
+            return false;
+        }
         private void label1_Click(object sender, EventArgs e)
         {
 
@@ -95,12 +105,10 @@ namespace TravelEaseForms.Forms
 
         private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
+
             this.Hide();
-
             var dashboard = new SP_Registration();
-
             dashboard.FormClosed += (s, args) => this.Close();
-
             dashboard.Show();
         }
 
