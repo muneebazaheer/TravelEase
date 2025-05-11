@@ -46,6 +46,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+<<<<<<< HEAD
     <Compile Include="Forms\AdminSignIn.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -58,6 +59,8 @@
     <Compile Include="Forms\SP_Login.Designer.cs">
       <DependentUpon>SP_Login.cs</DependentUpon>
     </Compile>
+=======
+>>>>>>> bf8059447f2e23e511f05c024b11c73738b46067
     <Compile Include="Forms\SP_Main.cs">
       <SubType>Form</SubType>
     </Compile>

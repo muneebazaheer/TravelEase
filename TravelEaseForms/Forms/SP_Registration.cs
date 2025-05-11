@@ -287,6 +287,7 @@ namespace TravelEaseForms
             dashboard.Show();
         }
 
+<<<<<<< HEAD
         private void textBox2_TextChanged(object sender, EventArgs e)
         {
 
@@ -323,6 +324,9 @@ namespace TravelEaseForms
         }
 
         private void textBox6_TextChanged(object sender, EventArgs e)
+=======
+        private void SP_Registration_Load(object sender, EventArgs e)
+>>>>>>> bf8059447f2e23e511f05c024b11c73738b46067
         {
 
         }
