@@ -1,12 +1,70 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.SqlClient;
 using System.Drawing;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Forms;
+using static System.Net.WebRequestMethods;
+//using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace TravelEaseForms
 {
+
+    //Class to capture the query output for tour requests
+    public class ServiceCard
+    {
+        public string ServiceName { get; set; }
+        public string OperatorName { get; set; }
+        public decimal Rating { get; set; }
+        public string OperatorUserID { get; set; }
+        public string ServiceID { get; set; }
+
+    }
+
+    //Class to capture the query output for services
+    public class ServiceInfo
+    {
+        public string ServiceID { get; set; }
+        public string Name { get; set; }
+        public string Type { get; set; }
+        public decimal Cost { get; set; }
+    }
+
+    //class to capture the query output for bookings
+    public class BookingInfo
+    {
+        public int BookingID { get; set; }
+        public DateTime BookingDate { get; set; }
+        public int Quantity { get; set; }
+        public string ServiceName { get; set; }
+        public string ServiceType { get; set; }
+        public string Status { get; set; } 
+    }
+    public class Hotel
+    {
+        public string HotelID { get; set; }
+        public string HotelName { get; set; }
+        public string Address { get; set; }
+        public string ServiceID { get; set; }
+    }
+
+    public class AvailabilityInfo
+    {
+        public int TotalRooms { get; set; }
+        public int BookedRooms { get; set; }
+        public int AvailableRooms { get; set; }
+    }
+
+    public class Room
+    {
+        public string RoomID { get; set; }
+        public int RoomNo { get; set; }
+        public string Type { get; set; }
+        public decimal Cost { get; set; }
+    }
+
     public partial class SP_Main : Form
     {
         // navigation chrome (two parts in which the screen is divided
@@ -25,6 +83,8 @@ namespace TravelEaseForms
         private Button btnManageBookings;
         private Button btnStatistics;
 
+        string connectionString = "Data Source=DESKTOP-7HGU5BP\\SQLEXPRESS;Initial Catalog=TravelEaseDataBase;Integrated Security=True;";
+
         /*CONSTRUCTOR*/
         public SP_Main()
         {
@@ -32,6 +92,599 @@ namespace TravelEaseForms
             InitializeLayout();
             ApplyColorPalette();
         }
+
+        //Queries for managing requests
+        public List<ServiceCard> fetchOperatorRequests()
+        {
+            List<ServiceCard> services = new List<ServiceCard>();
+            string currentProviderUserID = UserSession.CurrentUserID;
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                {
+                    connection.Open();
+
+                    string query = @"SELECT u.Name AS OperatorName, s.Name AS ServiceName, op.Rating,
+                          a.UserID AS OperatorUserID, a.ServiceID
+                       FROM Assign AS a
+                       JOIN TourOperators AS op ON a.UserID = op.UserID
+                       JOIN Users AS u ON op.UserID = u.UserID
+                       JOIN Services AS s ON a.ServiceID = s.ServiceID
+                       WHERE s.UserID = @CurrentProviderUserID
+                       AND (a.Approved = 0)"; 
+
+
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@CurrentProviderUserID", currentProviderUserID);
+
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                services.Add(new ServiceCard
+                                {
+                                    ServiceName = reader["ServiceName"].ToString(),
+                                    OperatorName = reader["OperatorName"].ToString(),
+                                    Rating = reader["Rating"] != DBNull.Value ? Convert.ToDecimal(reader["Rating"]) : 0,
+                                    OperatorUserID = reader["OperatorUserID"].ToString(),
+                                    ServiceID = reader["ServiceID"].ToString()
+                                });
+                            }
+
+                            if (services.Count == 0)
+                            {
+                                MessageBox.Show("No Requests to approve", "", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            }
+                        }
+                    }
+                }
+                return services;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Database error: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            return services;
+        }
+        private void ApproveService(string operatorUserID, string serviceID)
+        {
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                {
+                    connection.Open();
+                    using (SqlTransaction transaction = connection.BeginTransaction())
+                    {
+                        try
+                        {
+                            // 1. Update the Assign table to set Approved = true
+                            string updateQuery = @"UPDATE Assign 
+                                         SET Approved = 1 
+                                         WHERE UserID = @OperatorID 
+                                         AND ServiceID = @ServiceID";
+
+                            using (SqlCommand command = new SqlCommand(updateQuery, connection, transaction))
+                            {
+                                command.Parameters.AddWithValue("@OperatorID", operatorUserID);
+                                command.Parameters.AddWithValue("@ServiceID", serviceID);
+                                command.ExecuteNonQuery();
+                            }
+
+                            //// 2. Get the TourID associated with this assignment
+                            //string getTourQuery = @"SELECT TOP 1 t.TourID
+                            //              FROM Tours t
+                            //              JOIN TourOperators op ON t.UserID = op.UserID
+                            //              WHERE op.UserID = @OperatorID";
+
+                            //string tourID = null;
+                            //using (SqlCommand command = new SqlCommand(getTourQuery, connection, transaction))
+                            //{
+                            //    command.Parameters.AddWithValue("@OperatorID", operatorUserID);
+                            //    object result = command.ExecuteScalar();
+                            //    if (result != null && result != DBNull.Value)
+                            //    {
+                            //        tourID = result.ToString();
+                            //    }
+                            //    else
+                            //    {
+                            //        throw new Exception("No Tour found for this operator");
+                            //    }
+                            //}
+
+                            //// 3. Insert into Utilize table
+                            //string insertQuery = @"INSERT INTO Utilize (TourID, ServiceID)
+                            //             VALUES (@TourID, @ServiceID)";
+
+                            //using (SqlCommand command = new SqlCommand(insertQuery, connection, transaction))
+                            //{
+                            //    command.Parameters.AddWithValue("@TourID", tourID);
+                            //    command.Parameters.AddWithValue("@ServiceID", serviceID);
+                            //    command.ExecuteNonQuery();
+                            //}
+
+                            // 4. Commit the transaction
+                            transaction.Commit();
+                            MessageBox.Show("Service has been approved and assigned to tour!",
+                                "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        }
+                        catch (Exception ex)
+                        {
+                            // Rollback the transaction if any error occurs
+                            transaction.Rollback();
+                            throw new Exception("Transaction failed: " + ex.Message);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error approving service: {ex.Message}",
+                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+        private void RejectService(string operatorUserID, string serviceID)
+        {
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                {
+                    connection.Open();
+                    string deleteQuery = @"DELETE FROM Assign 
+                                 WHERE UserID = @OperatorID 
+                                 AND ServiceID = @ServiceID";
+
+                    using (SqlCommand command = new SqlCommand(deleteQuery, connection))
+                    {
+                        command.Parameters.AddWithValue("@OperatorID", operatorUserID);
+                        command.Parameters.AddWithValue("@ServiceID", serviceID);
+
+                        int rowsAffected = command.ExecuteNonQuery();
+                        if (rowsAffected > 0)
+                        {
+                            MessageBox.Show("Service request has been rejected.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        }
+                        else
+                        {
+                            MessageBox.Show("Failed to reject service.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error rejecting service: {ex.Message}",
+                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        //Queries for viewing, adding, removing services
+        private List<ServiceInfo> FetchServices()
+        {
+            List<ServiceInfo> services = new List<ServiceInfo>();
+
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                {
+                    connection.Open();
+                    string query = @"SELECT s.ServiceID, s.Name, s.Type, s.Cost 
+                           FROM Services s
+                           WHERE s.UserID = @CurrentUserID";
+
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@CurrentUserID", UserSession.CurrentUserID);
+
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                services.Add(new ServiceInfo
+                                {
+                                    ServiceID = reader["ServiceID"].ToString(),
+                                    Name = reader["Name"].ToString(),
+                                    Type = reader["Type"].ToString(),
+                                    Cost = reader["Cost"] != DBNull.Value ? Convert.ToDecimal(reader["Cost"]) : 0
+                                });
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error fetching services: {ex.Message}",
+                    "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
+            return services;
+        }
+        private bool RemoveService(string serviceIdToRemove)
+        {
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                {
+                    connection.Open();
+                    string query = @"DELETE FROM Services WHERE UserID = @currentUserID AND ServiceID = @serviceID";
+
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
+                        // Add both required parameters
+                        command.Parameters.AddWithValue("@currentUserID", UserSession.CurrentUserID);
+                        command.Parameters.AddWithValue("@serviceID", serviceIdToRemove);
+
+                        int rowsAffected = command.ExecuteNonQuery();
+
+                        return rowsAffected > 0;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error removing service: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
+            }
+        }
+
+        private void AddServiceToDatabase(string name, string type, decimal cost)
+        {
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                {
+                    connection.Open();
+                    using (SqlTransaction transaction = connection.BeginTransaction())
+                    {
+                        try
+                        {
+                            // 1. Check whether this service already exists for the current user
+                            string checkQuery = @"SELECT COUNT(*) FROM Services WHERE UserID = @userID AND Name = @name";
+
+                            using (SqlCommand checkCmd = new SqlCommand(checkQuery, connection, transaction))
+                            {
+                                checkCmd.Parameters.AddWithValue("@userID", UserSession.CurrentUserID);
+                                checkCmd.Parameters.AddWithValue("@name", name);
+                                int existing = Convert.ToInt32(checkCmd.ExecuteScalar());
+
+                                if (existing > 0)
+                                {
+                                    MessageBox.Show("A service with that name already exists.","Duplicate Service",MessageBoxButtons.OK,MessageBoxIcon.Warning);
+                                    transaction.Rollback();
+                                    return;
+                                }
+                            }
+
+                            // 2. Insert the new service
+                            string insertQuery = @"INSERT INTO Services (Name, Type, Cost, UserID) VALUES (@name, @type, @cost, @userID);";
+                            using (SqlCommand insertCmd = new SqlCommand(insertQuery, connection, transaction))
+                            {
+                                insertCmd.Parameters.AddWithValue("@userID", UserSession.CurrentUserID);
+                                insertCmd.Parameters.AddWithValue("@name", name);
+                                insertCmd.Parameters.AddWithValue("@type", type);
+                                insertCmd.Parameters.AddWithValue("@cost", cost);
+                                insertCmd.ExecuteNonQuery();
+                            }
+
+                            
+                            transaction.Commit();
+                            MessageBox.Show("Service has been successfully added!","Success",MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        }
+                        catch (Exception)
+                        {
+                            transaction.Rollback();
+                            throw;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error adding service: {ex.Message}","Error",MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+
+        //Queries for Bookings
+        private List<BookingInfo> GetUserBookings()
+        {
+            List<BookingInfo> bookings = new List<BookingInfo>();
+
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                {
+                    connection.Open();
+
+                    string query = @"SELECT
+                      b.BookingID,
+                      b.BookingDate,
+                      b.Quantity,
+                      b.Status,
+                      s.Name       AS ServiceName,
+                      s.Type       AS ServiceType
+                    FROM ServiceProviders AS sp
+                      JOIN Services       AS s ON sp.UserID    = s.UserID
+                      JOIN Bookings       AS b ON b.ServiceID  = s.ServiceID
+                    WHERE sp.UserID = @currentUserID;
+                    ";
+
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@currentUserID", UserSession.CurrentUserID);
+
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                bookings.Add(new BookingInfo
+                                {
+                                    BookingID = reader.GetInt32(reader.GetOrdinal("BookingID")),
+                                    BookingDate = reader.GetDateTime(reader.GetOrdinal("BookingDate")),
+                                    Quantity = reader.GetInt32(reader.GetOrdinal("Quantity")),
+                                    ServiceName = reader.GetString(reader.GetOrdinal("ServiceName")),
+                                    ServiceType = reader.GetString(reader.GetOrdinal("ServiceType")),
+                                    Status = reader.GetString(reader.GetOrdinal("Status"))
+                                });
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error retrieving bookings: {ex.Message}");
+            }
+
+            return bookings;
+        }
+
+        private List<BookingInfo> GetUnpaidServiceBookings()
+        {
+            var list = new List<BookingInfo>();
+            const string sql = @"
+                                SELECT
+                                  b.BookingID,
+                                  b.BookingDate,
+                                  b.Quantity,
+                                  s.Name         AS ServiceName,
+                                  s.Type         AS ServiceType
+                                FROM Services   AS s
+                                INNER JOIN Bookings AS b
+                                  ON s.ServiceID = b.ServiceID
+                                LEFT JOIN Payments  AS p
+                                  ON p.BookingID   = b.BookingPK
+                                WHERE p.PaymentID IS NULL
+                                  AND s.UserID     = @currentUserID;
+                            ";
+
+            using (var conn = new SqlConnection(connectionString))
+            using (var cmd = new SqlCommand(sql, conn))
+            {
+                cmd.Parameters.AddWithValue("@currentUserID", UserSession.CurrentUserID);
+                conn.Open();
+                using (var rdr = cmd.ExecuteReader())
+                {
+                    while (rdr.Read())
+                    {
+                        list.Add(new BookingInfo
+                        {
+                            BookingID = Convert.ToInt32(rdr["BookingID"]),
+                            BookingDate = (DateTime)rdr["BookingDate"],
+                            Quantity = Convert.ToInt32(rdr["Quantity"]),
+                            ServiceName = rdr["ServiceName"].ToString(),
+                            ServiceType = rdr["ServiceType"].ToString(),
+                            Status = "Pending"
+                        });
+                    }
+                }
+            }
+
+            return list;
+        }
+
+        //bhai ye kia horaha hai
+
+        // 1) Get all hotels managed by this provider
+        private List<Hotel> GetHotelsForCurrentUser()
+        {
+            var list = new List<Hotel>();
+            const string sql = @"
+                SELECT DISTINCT
+                  h.HotelID,
+                  h.Name     AS HotelName,
+                  h.Address,
+                  h.ServiceID
+                FROM ServiceProviders sp
+                JOIN Services s  ON sp.UserID  = s.UserID
+                JOIN Hotels h  ON s.ServiceID  = h.ServiceID
+                WHERE sp.UserID = @currentUserID;
+            ";
+
+            using (var conn = new SqlConnection(connectionString))
+            using (var cmd = new SqlCommand(sql, conn))
+            {
+                cmd.Parameters.AddWithValue("@currentUserID", UserSession.CurrentUserID);
+                conn.Open();
+                using (var rdr = cmd.ExecuteReader())
+                {
+                    while (rdr.Read())
+                    {
+                        list.Add(new Hotel
+                        {
+                            HotelID = rdr["HotelID"].ToString(),
+                            HotelName = rdr["HotelName"].ToString(),
+                            Address = rdr["Address"].ToString(),
+                            ServiceID = rdr["ServiceID"].ToString()
+                        });
+                    }
+                }
+            }
+            return list;
+        }
+
+        // 2) Get availability counts for a hotel on a specific date
+        private AvailabilityInfo GetRoomAvailability(string hotelId, DateTime date)
+        {
+            const string sql = @"
+                    SELECT
+                        COUNT(r.RoomID)                             AS TotalRooms,
+                        SUM(CASE WHEN rr.RoomID IS NOT NULL THEN 1 ELSE 0 END) AS BookedRooms,
+                        COUNT(r.RoomID)
+                        - SUM(CASE WHEN rr.RoomID IS NOT NULL THEN 1 ELSE 0 END) AS AvailableRooms
+                    FROM Hotels               AS h
+                    JOIN Rooms                AS r  ON r.HotelID = h.HotelID
+                    LEFT JOIN RoomReservations AS rr 
+                        ON rr.RoomID     = r.RoomID
+                        AND @date BETWEEN rr.ReservedFrom AND rr.ReservedTill
+                    WHERE h.HotelID     = @hotelId
+                    GROUP BY h.HotelID;
+                ";
+
+            using (var conn = new SqlConnection(connectionString))
+            using (var cmd = new SqlCommand(sql, conn))
+            {
+                cmd.Parameters.AddWithValue("@hotelId", hotelId);
+                cmd.Parameters.AddWithValue("@date", date.Date);
+                conn.Open();
+                using (var rdr = cmd.ExecuteReader())
+                {
+                    if (rdr.Read())
+                    {
+                        return new AvailabilityInfo
+                        {
+                            TotalRooms = Convert.ToInt32(rdr["TotalRooms"]),
+                            BookedRooms = Convert.ToInt32(rdr["BookedRooms"]),
+                            AvailableRooms = Convert.ToInt32(rdr["AvailableRooms"])
+                        };
+                    }
+                }
+            }
+            return new AvailabilityInfo(); 
+        }
+
+        // 3) Get list of free rooms for that date
+        private List<Room> GetAvailableRooms(string hotelId, DateTime date)
+        {
+            var list = new List<Room>();
+            const string sql = @"
+                SELECT
+                  r.RoomID,
+                  r.RoomNo,
+                  r.Type,
+                  r.Cost
+                FROM Rooms                AS r
+                LEFT JOIN RoomReservations AS rr
+                  ON rr.RoomID     = r.RoomID
+                 AND @date BETWEEN rr.ReservedFrom AND rr.ReservedTill
+                WHERE r.HotelID     = @hotelId
+                  AND rr.RoomID     IS NULL;
+            ";
+
+            using (var conn = new SqlConnection(connectionString))
+            using (var cmd = new SqlCommand(sql, conn))
+            {
+                cmd.Parameters.AddWithValue("@hotelId", hotelId);
+                cmd.Parameters.AddWithValue("@date", date.Date);
+                conn.Open();
+                using (var rdr = cmd.ExecuteReader())
+                {
+                    while (rdr.Read())
+                    {
+                        list.Add(new Room
+                        {
+                            RoomID = rdr["RoomID"].ToString(),
+                            RoomNo = Convert.ToInt32(rdr["RoomNo"]),
+                            Type = rdr["Type"].ToString(),
+                            Cost = (decimal)rdr["Cost"]
+                        });
+                    }
+                }
+            }
+            return list;
+        }
+
+        // 4) Book a room (insert a reservation)
+        private void ReserveRoomWithTransaction(string hotelId,string serviceId,string roomId,DateTime from, DateTime to)
+        {
+            using (var conn = new SqlConnection(connectionString))
+            {
+                conn.Open();
+                using (var tx = conn.BeginTransaction())
+                {
+                    try
+                    {
+                        // 1) Fetch the latest booking for this hotel-service
+                        const string getBookingSql = @"
+                            SELECT TOP 1
+                              b.BookingPK
+                            FROM Bookings AS b
+                            JOIN Services AS s ON b.ServiceID = s.ServiceID
+                            JOIN Hotels   AS h ON s.ServiceID = h.ServiceID
+                            WHERE s.ServiceID = @serviceId
+                              AND h.HotelID   = @hotelId
+                            ORDER BY b.BookingDate DESC;
+                        ";
+                        string bookingId;
+                        using (var cmd = new SqlCommand(getBookingSql, conn, tx))
+                        {
+                            cmd.Parameters.AddWithValue("@serviceId", serviceId);
+                            cmd.Parameters.AddWithValue("@hotelId", hotelId);
+                            var result = cmd.ExecuteScalar();
+                            if (result == null || result is DBNull)
+                            {
+                                MessageBox.Show(
+                                    "No existing booking found for this service.",
+                                    "Cannot Reserve Room",
+                                    MessageBoxButtons.OK,
+                                    MessageBoxIcon.Warning);
+                                tx.Rollback();
+                                return;
+                            }
+                            bookingId = result.ToString();
+                        }
+
+                        // 2) Insert the room reservation
+                        const string insertSql = @"
+                            INSERT INTO RoomReservations
+                              (BookingID, RoomID, ReservedFrom, ReservedTill)
+                            VALUES
+                              (@bookingId, @roomId, @from, @to);
+                        ";
+                        using (var cmd = new SqlCommand(insertSql, conn, tx))
+                        {
+                            cmd.Parameters.AddWithValue("@bookingId", bookingId);
+                            cmd.Parameters.AddWithValue("@roomId", roomId);
+                            cmd.Parameters.AddWithValue("@from", from.Date);
+                            cmd.Parameters.AddWithValue("@to", to.Date);
+                            cmd.ExecuteNonQuery();
+                        }
+
+                        // 3) Commit both steps together
+                        tx.Commit();
+                        MessageBox.Show(
+                            $"Room {roomId} reserved under booking {bookingId}.",
+                            "Success",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Information);
+                    }
+                    catch (Exception ex)
+                    {
+                        // Something went wrong: roll everything back
+                        tx.Rollback();
+                        MessageBox.Show(
+                            $"Error reserving room: {ex.Message}",
+                            "Error",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Error);
+                    }
+                }
+            }
+        }
+
+
+
 
         /*HELPERS*/
         private void ShowPage(Panel p, Action init)
@@ -97,22 +750,21 @@ namespace TravelEaseForms
         }
 
         // Helper method to create a standard booking card
-        private Panel CreateBookingCard(FlowLayoutPanel flp, (string BookingID, string CustomerName, string ServiceType,
-                                      string Date, decimal Amount, string Status) booking)
+        private Panel CreateBookingCard(FlowLayoutPanel flp, BookingInfo booking)
         {
             var card = new Panel
             {
                 Width = flp.ClientSize.Width - flp.Padding.Horizontal,
-                Height = 100,
+                Height = 120, // Slightly taller to accommodate status
                 Margin = new Padding(0, 0, 0, 10),
                 BackColor = ColorTranslator.FromHtml("#FAF1E6"), // beige
                 Padding = new Padding(10)
             };
 
-            // Customer info
+            // Booking ID and Status
             var lblName = new Label
             {
-                Text = $"{booking.CustomerName} - {booking.BookingID}",
+                Text = $"Booking ID: {booking.BookingID} - {booking.Status}",
                 Font = new Font("Montserrat", 11, FontStyle.Bold),
                 AutoSize = true,
                 Location = new Point(10, 10)
@@ -122,7 +774,7 @@ namespace TravelEaseForms
             // Service info
             var lblService = new Label
             {
-                Text = $"Service: {booking.ServiceType}",
+                Text = $"Service: {booking.ServiceName} ({booking.ServiceType})",
                 Font = new Font("Montserrat", 9),
                 AutoSize = true,
                 Location = new Point(10, 35)
@@ -132,68 +784,24 @@ namespace TravelEaseForms
             // Date info
             var lblDate = new Label
             {
-                Text = $"Date: {booking.Date}",
+                Text = $"Date: {booking.BookingDate:MM/dd/yyyy}",
                 Font = new Font("Montserrat", 9),
                 AutoSize = true,
                 Location = new Point(10, 55)
             };
             card.Controls.Add(lblDate);
 
-            // Amount info
-            var lblAmount = new Label
+            // Quantity info
+            var lblQuantity = new Label
             {
-                Text = $"Amount: ${booking.Amount:F2}",
+                Text = $"Quantity: {booking.Quantity}",
                 Font = new Font("Montserrat", 9),
                 AutoSize = true,
                 Location = new Point(10, 75)
             };
-            card.Controls.Add(lblAmount);
+            card.Controls.Add(lblQuantity);
 
             return card;
-        }
-
-        // Helper method to add a booking card with standard options
-        private void AddBookingCard(FlowLayoutPanel flp, (string BookingID, string CustomerName, string ServiceType,
-                                   string Date, decimal Amount, string Status) booking, bool showAllOptions = false)
-        {
-            var card = CreateBookingCard(flp, booking);
-
-            // Add status indicator
-            var statusPanel = new Panel
-            {
-                Size = new Size(80, 25),
-                Location = new Point(card.Width - 100, 10)
-            };
-
-            var statusLabel = new Label
-            {
-                Text = booking.Status,
-                TextAlign = ContentAlignment.MiddleCenter,
-                Dock = DockStyle.Fill,
-                Font = new Font("Montserrat", 9, FontStyle.Bold)
-            };
-
-            // Set color based on status
-            if (booking.Status == "Paid")
-            {
-                statusPanel.BackColor = ColorTranslator.FromHtml("#99BC85"); // green
-                statusLabel.ForeColor = Color.White;
-            }
-            else if (booking.Status == "Confirmed")
-            {
-                statusPanel.BackColor = ColorTranslator.FromHtml("#FFD966"); // yellow
-                statusLabel.ForeColor = ColorTranslator.FromHtml("#333333");
-            }
-            else
-            {
-                statusPanel.BackColor = ColorTranslator.FromHtml("#F8D7DA"); // light red
-                statusLabel.ForeColor = ColorTranslator.FromHtml("#721C24");
-            }
-
-            statusPanel.Controls.Add(statusLabel);
-            card.Controls.Add(statusPanel);
-
-            flp.Controls.Add(card);
         }
 
         // Helper method to add an info message card
@@ -272,7 +880,7 @@ namespace TravelEaseForms
             panelContent.Controls.AddRange(new[] { panelApprove, panelServices, panelBookings, panelStats });
 
             // 4) Instantiate each nav button into its field
-            btnApproveTours = CreateSidebarButton("Approve Tours");
+            btnApproveTours = CreateSidebarButton("Tour Provider Requests");
             btnManageServices = CreateSidebarButton("Manage Services");
             btnManageBookings = CreateSidebarButton("Manage Bookings");
             btnStatistics = CreateSidebarButton("Statistics");
@@ -312,117 +920,156 @@ namespace TravelEaseForms
             };
             panelApprove.Controls.Add(flp);
 
-            // 3) Dummy data – will later add query results here
-            var tours = new[]
-            {
-                new { TourID="T001", TourName="Mountain Hike",   AssignedBy="Operator A" },
-                new { TourID="T002", TourName="City Walk",       AssignedBy="Operator B" },
-                new { TourID="T003", TourName="Desert Safari",   AssignedBy="Operator C" },
-            };
+            List<ServiceCard> services = fetchOperatorRequests();
 
             // 4) Build one “card” (row) per tour
-            foreach (var t in tours)
+            foreach (var service in services)
             {
                 var row = new Panel
                 {
-                    Height = 80,
+                    Height = 125, 
                     Margin = new Padding(0, 0, 0, 10),
                     BackColor = ColorTranslator.FromHtml("#FAF1E6")  // beige
                 };
-                // initial width; will correct on resize below
                 row.Width = flp.ClientSize.Width - flp.Padding.Horizontal;
 
-                // b) Title label
-                var lblName = new Label
+                row.Tag = service;
+
+                // Service Name as heading
+                var lblServiceName = new Label
                 {
-                    Text = $"{t.TourName} ({t.TourID})",
+                    Text = service.ServiceName,
                     AutoSize = true,
-                    Font = new Font("Montserrat", 11, FontStyle.Bold),
+                    Font = new Font("Montserrat", 14, FontStyle.Bold),
                     ForeColor = ColorTranslator.FromHtml("#333333"),
                     Location = new Point(10, 10)
                 };
-                row.Controls.Add(lblName);
+                row.Controls.Add(lblServiceName);
 
-                // c) Subtitle label
-                var lblBy = new Label
+                // Operator Name
+                var lblOperator = new Label
                 {
-                    Text = $"Assigned by: {t.AssignedBy}",
+                    Text = $"Tour Operator: {service.OperatorName}",
                     AutoSize = true,
-                    Font = new Font("Montserrat", 9, FontStyle.Regular),
-                    ForeColor = ColorTranslator.FromHtml("#333333"),
-                    Location = new Point(10, 35)
+                    Font = new Font("Montserrat", 10, FontStyle.Regular),
+                    ForeColor = ColorTranslator.FromHtml("#666666"),
+                    Location = new Point(10, 40)
                 };
-                row.Controls.Add(lblBy);
+                row.Controls.Add(lblOperator);
 
-                // d) Reject button (right-most)
+                // Rating
+                var lblRating = new Label
+                {
+                    Text = $"Operator Rating: {service.Rating:F1}/5.0",
+                    AutoSize = true,
+                    Font = new Font("Montserrat", 10, FontStyle.Regular),
+                    ForeColor = ColorTranslator.FromHtml("#666666"),
+                    Location = new Point(10, 65)
+                };
+                row.Controls.Add(lblRating);
+
+                // Button panel (keep existing button code)
+                var btnPanel = new FlowLayoutPanel
+                {
+                    Dock = DockStyle.Right,
+                    Width = 180,  // Adjust as needed
+                    FlowDirection = FlowDirection.RightToLeft,
+                    Padding = new Padding(0, (row.Height - 30) / 2, 10, 0),
+                    BackColor = Color.Transparent,
+                    AutoSize = false,
+                    AutoSizeMode = AutoSizeMode.GrowOnly
+                };
+
+                // Reject button
                 var btnReject = new Button
                 {
                     Text = "Reject",
                     Size = new Size(80, 30),
-                    BackColor = ColorTranslator.FromHtml("#D22B2B"), // light red
+                    BackColor = ColorTranslator.FromHtml("#D22B2B"),
                     ForeColor = Color.White,
-                    FlatStyle = FlatStyle.Flat,
-                    //Anchor = AnchorStyles.Top | AnchorStyles.Right
+                    FlatStyle = FlatStyle.Flat
                 };
                 btnReject.FlatAppearance.BorderSize = 0;
-                btnReject.Click += (s, e) =>
-                {
-                    MessageBox.Show($"Rejected tour {t.TourID}");
+                btnReject.Click += (s, e) => {
+                    var svc = (ServiceCard)row.Tag;
+                    RejectService(svc.OperatorUserID, svc.ServiceID);
                     flp.Controls.Remove(row);
-                };
-                row.Controls.Add(btnReject);
 
-                // e) Accept button (to the left of Reject)
+                    // Check if this was the last card
+                    if (flp.Controls.Count == 0)
+                    {
+                        // Add "No requests" message (same code as above)
+                        Panel noRequestsPanel = new Panel
+                        {
+                            Height = 80,
+                            Margin = new Padding(0, 0, 0, 10),
+                            BackColor = ColorTranslator.FromHtml("#FAF1E6"),
+                            Width = flp.ClientSize.Width - flp.Padding.Horizontal
+                        };
+
+                        Label noRequestsLabel = new Label
+                        {
+                            Text = "No requests to approve",
+                            AutoSize = true,
+                            Font = new Font("Montserrat", 12, FontStyle.Bold),
+                            ForeColor = ColorTranslator.FromHtml("#666666"),
+                            Location = new Point(10, 30)
+                        };
+
+                        noRequestsPanel.Controls.Add(noRequestsLabel);
+                        flp.Controls.Add(noRequestsPanel);
+                    }
+                };
+
+                // Accept button
                 var btnAccept = new Button
                 {
                     Text = "Accept",
                     Size = new Size(80, 30),
-                    BackColor = ColorTranslator.FromHtml("#99BC85"), // sage
+                    BackColor = ColorTranslator.FromHtml("#99BC85"),
                     ForeColor = Color.White,
-                    FlatStyle = FlatStyle.Flat,
-                    //Anchor = AnchorStyles.Top | AnchorStyles.Right
+                    FlatStyle = FlatStyle.Flat
                 };
                 btnAccept.FlatAppearance.BorderSize = 0;
-                btnAccept.Click += (s, e) =>
-                {
-                    MessageBox.Show($"Approved tour {t.TourID}");
+                btnAccept.Click += (s, e) => {
+                    var svc = (ServiceCard)row.Tag;
+                    ApproveService(svc.OperatorUserID, svc.ServiceID);
                     flp.Controls.Remove(row);
-                };
-                row.Controls.Add(btnAccept);
 
-                var btnPanel = new FlowLayoutPanel
-                {
-                    Dock = DockStyle.Right,
-                    Width = btnAccept.Width + btnReject.Width + 30,
-                    FlowDirection = FlowDirection.RightToLeft,
-                    Padding = new Padding(0, (row.Height - btnAccept.Height) / 2, 10, 0),
-                    BackColor = Color.Transparent,  // so it “floats” on the card
-                    AutoSize = false,
-                    AutoSizeMode = AutoSizeMode.GrowOnly
+                    // Check if this was the last card
+                    if (flp.Controls.Count == 0)
+                    {
+                        // Add "No requests" message
+                        Panel noRequestsPanel = new Panel
+                        {
+                            Height = 80,
+                            Margin = new Padding(0, 0, 0, 10),
+                            BackColor = ColorTranslator.FromHtml("#FAF1E6"),
+                            Width = flp.ClientSize.Width - flp.Padding.Horizontal
+                        };
+
+                        Label noRequestsLabel = new Label
+                        {
+                            Text = "No requests to approve",
+                            AutoSize = true,
+                            Font = new Font("Montserrat", 12, FontStyle.Bold),
+                            ForeColor = ColorTranslator.FromHtml("#666666"),
+                            Location = new Point(10, 30)
+                        };
+
+                        noRequestsPanel.Controls.Add(noRequestsLabel);
+                        flp.Controls.Add(noRequestsPanel);
+                    }
                 };
+
                 btnPanel.Controls.Add(btnReject);
                 btnPanel.Controls.Add(btnAccept);
                 row.Controls.Add(btnPanel);
 
-                // f) Position the buttons whenever the row resizes
-                row.SizeChanged += (s, e) =>
-                {
-                    // 20px from the right edge
-                    btnReject.Location = new Point(
-                        row.ClientSize.Width - btnReject.Width - 20,
-                        (row.ClientSize.Height - btnReject.Height) / 2
-                    );
-                    // 10px gap to the left of Reject
-                    btnAccept.Location = new Point(
-                        btnReject.Left - btnAccept.Width - 10,
-                        (row.ClientSize.Height - btnAccept.Height) / 2
-                    );
-                };
-                row.PerformLayout();
                 flp.Controls.Add(row);
             }
 
-            // 5) Make sure each card spans the full width whenever flp is resized
+            // Make sure each card spans the full width whenever flp is resized
             flp.Resize += (s, e) =>
             {
                 foreach (Panel row in flp.Controls.OfType<Panel>())
@@ -436,15 +1083,6 @@ namespace TravelEaseForms
         private void InitializeManageServicesView()
         {
             panelServices.Controls.Clear();
-
-            // 1) Dummy data inside the method
-            var services = new List<(string ServiceID, string Name, decimal Cost)> {
-                ("S001", "Hotel Booking", 120.00m),
-                ("S002", "City Tour",      75.00m),
-                ("S003", "Transport",      40.00m),
-                ("S004", "Guide Service",  50.00m),
-                ("S005", "Meal Plan",      30.00m),
-            };
 
             // 2) Create a panel to hold both the combo box and the flow layout panel
             var containerPanel = new Panel
@@ -468,7 +1106,7 @@ namespace TravelEaseForms
                 "Remove a service"
             });
 
-            // 4) The FlowLayoutPanel that will hold your cards
+           //make flow layout panel to hold cards
             var flp = new FlowLayoutPanel
             {
                 Dock = DockStyle.Fill,
@@ -489,91 +1127,183 @@ namespace TravelEaseForms
                 flp.Controls.Clear();
                 var choice = cmb.SelectedItem as string;
 
+                List<ServiceInfo> services;
                 // --- VIEW ALL ---
                 if (choice == "View all current services")
                 {
-                    foreach (var svc in services)
+                    //fetch from db
+                    services = FetchServices();
+
+                    if (services.Count == 0)
                     {
-                        var card = new Panel
+                        // No services found
+                        var noServicePanel = new Panel
                         {
                             Height = 80,
                             Width = flp.ClientSize.Width - flp.Padding.Horizontal,
                             Margin = new Padding(0, 0, 0, 10),
                             BackColor = ColorTranslator.FromHtml("#FAF1E6")
                         };
-                        var lbl = new Label
+
+                        var noServiceLabel = new Label
                         {
-                            Text = $"{svc.Name} ({svc.ServiceID})",
+                            Text = "No services found",
                             AutoSize = true,
                             Font = new Font("Montserrat", 11, FontStyle.Bold),
-                            Location = new Point(10, 10)
+                            ForeColor = ColorTranslator.FromHtml("#666666"),
+                            Location = new Point(10, 30)
                         };
-                        card.Controls.Add(lbl);
 
-                        var cost = new Label
+                        noServicePanel.Controls.Add(noServiceLabel);
+                        flp.Controls.Add(noServicePanel);
+                    }
+                    else
+                    {
+                        foreach (var svc in services)
                         {
-                            Text = $"Cost: ${svc.Cost:F2}",
-                            AutoSize = true,
-                            Font = new Font("Montserrat", 9),
-                            Location = new Point(10, 35)
-                        };
-                        card.Controls.Add(cost);
+                         
+                            var card = new Panel
+                            {
+                                Height = 100, 
+                                Width = flp.ClientSize.Width - flp.Padding.Horizontal,
+                                Margin = new Padding(0, 0, 0, 10),
+                                BackColor = ColorTranslator.FromHtml("#FAF1E6")
+                            };
 
-                        flp.Controls.Add(card);
+                            // Service name
+                            var lblName = new Label
+                            {
+                                Text = $"{svc.Name} ({svc.ServiceID})",
+                                AutoSize = true,
+                                Font = new Font("Montserrat", 11, FontStyle.Bold),
+                                ForeColor = ColorTranslator.FromHtml("#333333"),
+                                Location = new Point(10, 10)
+                            };
+                            card.Controls.Add(lblName);
+
+                            // Type 
+                            var lblType = new Label
+                            {
+                                Text = $"Type: {svc.Type}",
+                                AutoSize = true,
+                                Font = new Font("Montserrat", 9),
+                                ForeColor = ColorTranslator.FromHtml("#555555"),
+                                Location = new Point(10, 35) 
+                            };
+                            card.Controls.Add(lblType);
+
+                            // Cost 
+                            var lblCost = new Label
+                            {
+                                Text = $"Cost: ${svc.Cost:F2}",
+                                AutoSize = true,
+                                Font = new Font("Montserrat", 9),
+                                ForeColor = ColorTranslator.FromHtml("#555555"),
+                                Location = new Point(10, 60) 
+                            };
+                            card.Controls.Add(lblCost);
+
+                            flp.Controls.Add(card);
+                        }
                     }
                 }
+
                 // --- REMOVE ---
                 else if (choice == "Remove a service")
                 {
-                    foreach (var svc in services.ToList())
+                    services = FetchServices();
+
+                    if (services.Count == 0)
                     {
-                        var card = new Panel
+                        // No services found
+                        var noServicePanel = new Panel
                         {
                             Height = 80,
                             Width = flp.ClientSize.Width - flp.Padding.Horizontal,
                             Margin = new Padding(0, 0, 0, 10),
                             BackColor = ColorTranslator.FromHtml("#FAF1E6")
                         };
-                        var lbl = new Label
+
+                        var noServiceLabel = new Label
                         {
-                            Text = $"{svc.Name} ({svc.ServiceID})",
+                            Text = "No services found",
                             AutoSize = true,
                             Font = new Font("Montserrat", 11, FontStyle.Bold),
-                            Location = new Point(10, 10)
-                        };
-                        card.Controls.Add(lbl);
-
-                        var btn = new Button
-                        {
-                            Text = "Remove",
-                            Size = new Size(80, 30),
-                            BackColor = ColorTranslator.FromHtml("#D22B2B"),
-                            ForeColor = Color.White,
-                            FlatStyle = FlatStyle.Flat
-                        };
-                        btn.FlatAppearance.BorderSize = 0;
-
-                        // Store service ID for removal
-                        string serviceIdToRemove = svc.ServiceID;
-
-                        btn.Click += (_, __) => {
-                            // Remove the service with the matching ID
-                            services.RemoveAll(x => x.ServiceID == serviceIdToRemove);
-                            MessageBox.Show($"Service {serviceIdToRemove} removed successfully!");
-
-                            // Refresh the list by re-selecting the "Remove a service" option
-                            cmb.SelectedIndex = -1; // Clear selection first
-                            cmb.SelectedIndex = cmb.Items.IndexOf("Remove a service");
+                            ForeColor = ColorTranslator.FromHtml("#666666"),
+                            Location = new Point(10, 30)
                         };
 
-                        card.Controls.Add(btn);
-                        btn.Location = new Point(
-                            card.ClientSize.Width - btn.Width - 20,
-                            (card.ClientSize.Height - btn.Height) / 2
-                        );
-
-                        flp.Controls.Add(card);
+                        noServicePanel.Controls.Add(noServiceLabel);
+                        flp.Controls.Add(noServicePanel);
                     }
+                    else
+                    {
+                        foreach (var svc in services)
+                        {
+                            var card = new Panel
+                            {
+                                Height = 80,
+                                Width = flp.ClientSize.Width - flp.Padding.Horizontal,
+                                Margin = new Padding(0, 0, 0, 10),
+                                BackColor = ColorTranslator.FromHtml("#FAF1E6")
+                            };
+                            var lbl = new Label
+                            {
+                                Text = $"{svc.Name} ({svc.ServiceID})",
+                                AutoSize = true,
+                                Font = new Font("Montserrat", 11, FontStyle.Bold),
+                                Location = new Point(10, 10)
+                            };
+                            card.Controls.Add(lbl);
+
+                            var btn = new Button
+                            {
+                                Text = "Remove",
+                                Size = new Size(80, 30),
+                                BackColor = ColorTranslator.FromHtml("#D22B2B"),
+                                ForeColor = Color.White,
+                                FlatStyle = FlatStyle.Flat
+                            };
+                            btn.FlatAppearance.BorderSize = 0;
+
+                            // Store service ID for removal
+                            string serviceIdToRemove = svc.ServiceID;
+
+                            btn.Click += (_, __) =>
+                            {
+                                DialogResult result = MessageBox.Show($"Are you sure you want to remove this service?",
+                                                                      "Confirm Removal",
+                                                                      MessageBoxButtons.YesNo,
+                                                                      MessageBoxIcon.Question);
+
+                                if (result == DialogResult.Yes)
+                                {
+                                    bool success = RemoveService(serviceIdToRemove);
+
+                                    if (success)
+                                    {
+                                        MessageBox.Show($"Service removed successfully!");
+
+                                        cmb.SelectedIndex = -1;
+                                        cmb.SelectedIndex = cmb.Items.IndexOf("Remove a service");
+                                    }
+                                    else
+                                    {
+                                        MessageBox.Show("Failed to remove service. Please try again.");
+                                    }
+                                }
+                            };
+
+                            card.Controls.Add(btn);
+                            btn.Location = new Point(
+                                card.ClientSize.Width - btn.Width - 20,
+                                (card.ClientSize.Height - btn.Height) / 2
+                            );
+
+                            flp.Controls.Add(card);
+                        }
+                    }
+                   
                 }
                 // --- ADD ---
                 else if (choice == "Add a service")
@@ -581,7 +1311,7 @@ namespace TravelEaseForms
                     var form = new Panel
                     {
                         Width = flp.ClientSize.Width - flp.Padding.Horizontal,
-                        Height = 160,
+                        Height = 150,
                         Padding = new Padding(20),
                         BackColor = ColorTranslator.FromHtml("#FAF1E6"),
                         Margin = new Padding(0, 0, 0, 10)
@@ -591,7 +1321,7 @@ namespace TravelEaseForms
                     {
                         Text = "Service Name:",
                         Font = new Font("Montserrat", 9),
-                        Location = new Point(0, 0),
+                        Location = new Point(0, 5),
                         AutoSize = true
                     };
                     var txtN = new TextBox
@@ -602,17 +1332,32 @@ namespace TravelEaseForms
                     };
                     form.Controls.AddRange(new Control[] { lblN, txtN });
 
+                    var lblT = new Label
+                    {
+                        Text = "Service Type:",
+                        Font = new Font("Montserrat", 9),
+                        Location = new Point(0, 45),
+                        AutoSize = true
+                    };
+                    var txtT = new TextBox
+                    {
+                        Font = new Font("Montserrat", 9),
+                        Location = new Point(120, 36),
+                        Width = 200
+                    };
+                    form.Controls.AddRange(new Control[] { lblT, txtT });
+
                     var lblC = new Label
                     {
                         Text = "Cost:",
                         Font = new Font("Montserrat", 9),
-                        Location = new Point(0, 40),
+                        Location = new Point(0, 85),
                         AutoSize = true
                     };
                     var txtC = new TextBox
                     {
                         Font = new Font("Montserrat", 9),
-                        Location = new Point(120, 36),
+                        Location = new Point(120, 72),
                         Width = 100
                     };
                     form.Controls.AddRange(new Control[] { lblC, txtC });
@@ -624,19 +1369,30 @@ namespace TravelEaseForms
                         BackColor = ColorTranslator.FromHtml("#99BC85"),
                         ForeColor = Color.White,
                         FlatStyle = FlatStyle.Flat,
-                        Location = new Point(120, 80)
+                        Location = new Point(120, 104)
                     };
                     btnA.FlatAppearance.BorderSize = 0;
-                    btnA.Click += (_, __) => {
-                        if (string.IsNullOrWhiteSpace(txtN.Text) || !decimal.TryParse(txtC.Text, out var cost))
+                    btnA.Click += (_, __) =>
+                    {
+                        if (string.IsNullOrWhiteSpace(txtN.Text))
                         {
-                            MessageBox.Show("Enter valid name & cost");
+                            MessageBox.Show("Please enter a service name");
                             return;
                         }
-                        var id = $"S{services.Count + 1:000}";
-                        services.Add((id, txtN.Text.Trim(), cost));
-                        MessageBox.Show($"Service {id} added!");
-                        cmb.SelectedIndex = cmb.Items.IndexOf("View all current services");
+
+                        if (string.IsNullOrWhiteSpace(txtT.Text))
+                        {
+                            MessageBox.Show("Please enter a service type");
+                            return;
+                        }
+
+                        if (!decimal.TryParse(txtC.Text, out decimal cost))
+                        {
+                            MessageBox.Show("Please enter a valid cost");
+                            return;
+                        }
+
+                        AddServiceToDatabase(txtN.Text, txtT.Text, cost);
                     };
                     form.Controls.Add(btnA);
 
@@ -662,17 +1418,6 @@ namespace TravelEaseForms
         {
             panelBookings.Controls.Clear();
 
-            // 1) Dummy booking data
-            var bookings = new List<(string BookingID, string CustomerName, string ServiceType,
-                                   string Date, decimal Amount, string Status)>
-    {
-        ("B001", "John Smith", "Hotel Booking", "2025-05-10", 240.00m, "Pending"),
-        ("B002", "Emma Johnson", "City Tour", "2025-05-12", 150.00m, "Confirmed"),
-        ("B003", "Michael Brown", "Transport", "2025-05-15", 120.00m, "Pending"),
-        ("B004", "Sarah Wilson", "Guide Service", "2025-05-20", 100.00m, "Pending"),
-        ("B005", "Robert Davis", "Hotel Booking", "2025-05-22", 320.00m, "Paid"),
-    };
-
             // 2) Create a container panel
             var containerPanel = new Panel
             {
@@ -690,11 +1435,10 @@ namespace TravelEaseForms
             };
 
             cmb.Items.AddRange(new[] {
-        "View all bookings",
-        "Pending confirmations",
-        "Track payments",
-        "Update availability"
-    });
+                "View all bookings",
+                "Track payments",
+                "Update availability"
+            });
 
             // 4) Create the FlowLayoutPanel for cards
             var flp = new FlowLayoutPanel
@@ -717,386 +1461,208 @@ namespace TravelEaseForms
                 flp.Controls.Clear();
                 var choice = cmb.SelectedItem as string;
 
-                // --- VIEW ALL BOOKINGS ---
+                //---VIEW ALL BOOKINGS ---
                 if (choice == "View all bookings")
                 {
-                    foreach (var booking in bookings)
+                    List<BookingInfo> bookings = GetUserBookings();
+
+                    if (bookings.Count == 0)
                     {
-                        AddBookingCard(flp, booking, showAllOptions: true);
+                        // No Bookings found
+                        var noServicePanel = new Panel
+                        {
+                            Height = 80,
+                            Width = flp.ClientSize.Width - flp.Padding.Horizontal,
+                            Margin = new Padding(0, 0, 0, 10),
+                            BackColor = ColorTranslator.FromHtml("#FAF1E6")
+                        };
+
+                        var noServiceLabel = new Label
+                        {
+                            Text = "No services found",
+                            AutoSize = true,
+                            Font = new Font("Montserrat", 11, FontStyle.Bold),
+                            ForeColor = ColorTranslator.FromHtml("#666666"),
+                            Location = new Point(10, 30)
+                        };
+
+                        noServicePanel.Controls.Add(noServiceLabel);
+                        flp.Controls.Add(noServicePanel);
+                    }
+                    else
+                    {
+                        foreach (var booking in bookings)
+                        {
+                            var card = CreateBookingCard(flp, booking);
+                            flp.Controls.Add(card);
+
+                        }
                     }
                 }
-                // --- PENDING CONFIRMATIONS ---
-                else if (choice == "Pending confirmations")
-                {
-                    var pendingBookings = bookings.Where(b => b.Status == "Pending").ToList();
 
-                    if (pendingBookings.Count == 0)
-                    {
-                        AddInfoCard(flp, "No pending bookings to confirm");
-                        return;
-                    }
-
-                    foreach (var booking in pendingBookings)
-                    {
-                        var card = CreateBookingCard(flp, booking);
-
-                        // Add confirm button
-                        var btnConfirm = new Button
-                        {
-                            Text = "Confirm",
-                            Size = new Size(90, 30),
-                            BackColor = ColorTranslator.FromHtml("#99BC85"), // sage green
-                            ForeColor = Color.White,
-                            FlatStyle = FlatStyle.Flat
-                        };
-                        btnConfirm.FlatAppearance.BorderSize = 0;
-
-                        string bookingId = booking.BookingID;
-                        btnConfirm.Click += (_, __) => {
-                            // Find and update the booking status
-                            var index = bookings.FindIndex(b => b.BookingID == bookingId);
-                            if (index >= 0)
-                            {
-                                var updatedBooking = bookings[index];
-                                bookings[index] = (updatedBooking.BookingID, updatedBooking.CustomerName,
-                                                  updatedBooking.ServiceType, updatedBooking.Date,
-                                                  updatedBooking.Amount, "Confirmed");
-
-                                MessageBox.Show($"Booking {bookingId} has been confirmed!");
-
-                                // Refresh the view
-                                cmb.SelectedIndex = -1;
-                                cmb.SelectedIndex = cmb.Items.IndexOf("Pending confirmations");
-                            }
-                        };
-
-                        // Add reject button
-                        var btnReject = new Button
-                        {
-                            Text = "Reject",
-                            Size = new Size(90, 30),
-                            BackColor = ColorTranslator.FromHtml("#D22B2B"), // red
-                            ForeColor = Color.White,
-                            FlatStyle = FlatStyle.Flat
-                        };
-                        btnReject.FlatAppearance.BorderSize = 0;
-
-                        btnReject.Click += (_, __) => {
-                            // Remove the booking
-                            bookings.RemoveAll(b => b.BookingID == bookingId);
-                            MessageBox.Show($"Booking {bookingId} has been rejected and removed.");
-
-                            // Refresh the view
-                            cmb.SelectedIndex = -1;
-                            cmb.SelectedIndex = cmb.Items.IndexOf("Pending confirmations");
-                        };
-
-                        // Add buttons panel
-                        var btnPanel = new FlowLayoutPanel
-                        {
-                            FlowDirection = FlowDirection.RightToLeft,
-                            Size = new Size(200, 40),
-                            Location = new Point(card.Width - 220, card.Height - 45),
-                            BackColor = Color.Transparent
-                        };
-                        btnPanel.Controls.Add(btnReject);
-                        btnPanel.Controls.Add(btnConfirm);
-                        card.Controls.Add(btnPanel);
-
-                        flp.Controls.Add(card);
-                    }
-                }
-                // --- TRACK PAYMENTS ---
+                // --- TRACK PAYMENTS ---//
                 else if (choice == "Track payments")
                 {
-                    // Add payment summary card
+                    // fetch unpaid bookings
+                    var bookings = GetUnpaidServiceBookings();
+
+                    // summary card (all of these are pending)
+                    decimal paidAmount = 0m;
+                    int paidCount = 0;
+                    int pendingCount = bookings.Count;
+
                     var summaryCard = new Panel
                     {
                         Width = flp.ClientSize.Width - flp.Padding.Horizontal,
                         Height = 100,
                         Margin = new Padding(0, 0, 0, 15),
-                        BackColor = ColorTranslator.FromHtml("#E4EFE7"), // light mint
+                        BackColor = ColorTranslator.FromHtml("#E4EFE7"),
                         Padding = new Padding(15)
                     };
-
-                    // Calculate payment statistics
-                    decimal totalAmount = bookings.Sum(b => b.Amount);
-                    decimal paidAmount = bookings.Where(b => b.Status == "Paid").Sum(b => b.Amount);
-                    decimal pendingAmount = totalAmount - paidAmount;
-                    int paidCount = bookings.Count(b => b.Status == "Paid");
-                    int pendingCount = bookings.Count(b => b.Status != "Paid");
-
-                    var lblSummary = new Label
+                    summaryCard.Controls.Add(new Label
                     {
                         Text = "Payment Summary",
                         Font = new Font("Montserrat", 12, FontStyle.Bold),
                         AutoSize = true,
                         Location = new Point(10, 10)
-                    };
-
-                    var lblStats = new Label
+                    });
+                    summaryCard.Controls.Add(new Label
                     {
-                        Text = $"Total: ${totalAmount:F2} • Paid: ${paidAmount:F2} ({paidCount} bookings) • " +
-                               $"Pending: ${pendingAmount:F2} ({pendingCount} bookings)",
+                        //Text = $"Total: ${totalAmount:F2} • Paid: ${paidAmount:F2} ({paidCount}) • " +
+                        //           $"Pending: ${pendingAmount:F2} ({pendingCount})",
+                        Text = $" • Paid: ${paidAmount:F2} ({paidCount}) •",
                         Font = new Font("Montserrat", 10),
                         AutoSize = true,
                         Location = new Point(10, 40)
-                    };
-
-                    var lblNote = new Label
+                    });
+                    summaryCard.Controls.Add(new Label
                     {
-                        Text = "Click on a booking to update its payment status",
+                        Text = "Click on a booking to mark it paid",
                         Font = new Font("Montserrat", 9, FontStyle.Italic),
                         ForeColor = ColorTranslator.FromHtml("#666666"),
                         AutoSize = true,
                         Location = new Point(10, 70)
-                    };
-
-                    summaryCard.Controls.AddRange(new Control[] { lblSummary, lblStats, lblNote });
+                    });
                     flp.Controls.Add(summaryCard);
 
-                    // Add booking cards with payment options
+                    // one card per pending booking
                     foreach (var booking in bookings)
                     {
                         var card = CreateBookingCard(flp, booking);
 
-                        // Add status indicator
+                        // status badge
                         var statusPanel = new Panel
                         {
                             Size = new Size(80, 25),
-                            Location = new Point(card.Width - 100, 10)
+                            Location = new Point(card.Width - 100, 10),
+                            BackColor = ColorTranslator.FromHtml("#F8D7DA")
                         };
-
                         var statusLabel = new Label
                         {
                             Text = booking.Status,
                             TextAlign = ContentAlignment.MiddleCenter,
                             Dock = DockStyle.Fill,
-                            Font = new Font("Montserrat", 9, FontStyle.Bold)
+                            Font = new Font("Montserrat", 9, FontStyle.Bold),
+                            ForeColor = ColorTranslator.FromHtml("#721C24")
                         };
-
-                        // Set color based on status
-                        if (booking.Status == "Paid")
-                        {
-                            statusPanel.BackColor = ColorTranslator.FromHtml("#99BC85"); // green
-                            statusLabel.ForeColor = Color.White;
-                        }
-                        else if (booking.Status == "Confirmed")
-                        {
-                            statusPanel.BackColor = ColorTranslator.FromHtml("#FFD966"); // yellow
-                            statusLabel.ForeColor = ColorTranslator.FromHtml("#333333");
-                        }
-                        else
-                        {
-                            statusPanel.BackColor = ColorTranslator.FromHtml("#F8D7DA"); // light red
-                            statusLabel.ForeColor = ColorTranslator.FromHtml("#721C24");
-                        }
-
                         statusPanel.Controls.Add(statusLabel);
                         card.Controls.Add(statusPanel);
 
-                        // Add update payment button for non-paid bookings
-                        if (booking.Status != "Paid")
-                        {
-                            var btnPayment = new Button
-                            {
-                                Text = "Mark as Paid",
-                                Size = new Size(120, 30),
-                                BackColor = ColorTranslator.FromHtml("#99BC85"),
-                                ForeColor = Color.White,
-                                FlatStyle = FlatStyle.Flat,
-                                Location = new Point(card.Width - 140, card.Height - 40)
-                            };
-                            btnPayment.FlatAppearance.BorderSize = 0;
+                        // “Mark as Paid” button
+                        //var btnPayment = new Button
+                        //{
+                        //    Text = "Mark as Paid",
+                        //    Size = new Size(120, 30),
+                        //    BackColor = ColorTranslator.FromHtml("#99BC85"),
+                        //    ForeColor = Color.White,
+                        //    FlatStyle = FlatStyle.Flat,
+                        //    Location = new Point(card.Width - 140, card.Height - 40)
+                        //};
+                        //btnPayment.FlatAppearance.BorderSize = 0;
+                        //btnPayment.Click += (_, __) =>
+                        //{
+                        //    MessageBox.Show($"Payment for booking {booking.BookingID} has been recorded!",
+                        //                    "Paid", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
-                            string bookingId = booking.BookingID;
-                            btnPayment.Click += (_, __) => {
-                                // Update payment status
-                                var index = bookings.FindIndex(b => b.BookingID == bookingId);
-                                if (index >= 0)
-                                {
-                                    var updatedBooking = bookings[index];
-                                    bookings[index] = (updatedBooking.BookingID, updatedBooking.CustomerName,
-                                                      updatedBooking.ServiceType, updatedBooking.Date,
-                                                      updatedBooking.Amount, "Paid");
-
-                                    MessageBox.Show($"Payment for booking {bookingId} has been recorded!");
-
-                                    // Refresh the view
-                                    cmb.SelectedIndex = -1;
-                                    cmb.SelectedIndex = cmb.Items.IndexOf("Track payments");
-                                }
-                            };
-
-                            card.Controls.Add(btnPayment);
-                        }
+                         
+                        //};
+                        //card.Controls.Add(btnPayment);
 
                         flp.Controls.Add(card);
                     }
                 }
-                // --- UPDATE AVAILABILITY ---
+
+                //    // --- UPDATE AVAILABILITY ---
                 else if (choice == "Update availability")
                 {
-                    // Group bookings by service type for availability management
-                    var serviceGroups = bookings
-                        .GroupBy(b => b.ServiceType)
-                        .Select(g => new {
-                            ServiceType = g.Key,
-                            BookingCount = g.Count(),
-                            TotalRevenue = g.Sum(b => b.Amount)
-                        })
-                        .ToList();
+                    flp.Controls.Clear();
 
-                    // Add availability management form
-                    var formPanel = new Panel
+                    // 1) Hotel selector
+                    var hotels = GetHotelsForCurrentUser();
+                    var cmbHotel = new ComboBox { DropDownStyle = ComboBoxStyle.DropDownList, Width = 200 };
+                    cmbHotel.Items.AddRange(hotels.ToArray());
+                    cmbHotel.DisplayMember = "HotelName";
+                    cmbHotel.ValueMember = "HotelID";
+                    flp.Controls.Add(cmbHotel);
+
+                    // 2) Date picker
+                    var dtp = new DateTimePicker { Format = DateTimePickerFormat.Short };
+                    flp.Controls.Add(dtp);
+
+                    // 3) Availability labels
+                    var lblAvail = new Label { Location = new Point(0, 60), AutoSize = true };
+                    flp.Controls.Add(lblAvail);
+
+                    // 4) Room list
+                    var lstRooms = new ListBox { Location = new Point(0, 90), Width = 300, Height = 150 };
+                    flp.Controls.Add(lstRooms);
+
+                    // 5) Book button
+                    var btnBook = new Button
                     {
-                        Width = flp.ClientSize.Width - flp.Padding.Horizontal,
-                        Height = 250,
-                        Margin = new Padding(0, 0, 0, 15),
-                        BackColor = ColorTranslator.FromHtml("#FAF1E6"),
-                        Padding = new Padding(20)
+                        Text = "Book Selected Room",
+                        Location = new Point(0, 250),
+                        Enabled = false
                     };
+                    flp.Controls.Add(btnBook);
 
-                    var lblTitle = new Label
+                    // When hotel or date changes, refresh availability & room list
+                    void refresh()
                     {
-                        Text = "Update Service Availability",
-                        Font = new Font("Montserrat", 12, FontStyle.Bold),
-                        AutoSize = true,
-                        Location = new Point(0, 0)
-                    };
-                    formPanel.Controls.Add(lblTitle);
-
-                    var lblService = new Label
-                    {
-                        Text = "Service Type:",
-                        Font = new Font("Montserrat", 9),
-                        AutoSize = true,
-                        Location = new Point(0, 40)
-                    };
-                    formPanel.Controls.Add(lblService);
-
-                    var cmbService = new ComboBox
-                    {
-                        DropDownStyle = ComboBoxStyle.DropDownList,
-                        Font = new Font("Montserrat", 9),
-                        Location = new Point(120, 36),
-                        Width = 200
-                    };
-                    cmbService.Items.AddRange(new[] {
-                "Hotel Booking",
-                "City Tour",
-                "Transport",
-                "Guide Service",
-                "Meal Plan"
-            });
-                    formPanel.Controls.Add(cmbService);
-
-                    var lblDate = new Label
-                    {
-                        Text = "Date:",
-                        Font = new Font("Montserrat", 9),
-                        AutoSize = true,
-                        Location = new Point(0, 70)
-                    };
-                    formPanel.Controls.Add(lblDate);
-
-                    var dtpDate = new DateTimePicker
-                    {
-                        Font = new Font("Montserrat", 9),
-                        Location = new Point(120, 66),
-                        Width = 200,
-                        Format = DateTimePickerFormat.Short
-                    };
-                    formPanel.Controls.Add(dtpDate);
-
-                    var lblCapacity = new Label
-                    {
-                        Text = "Capacity:",
-                        Font = new Font("Montserrat", 9),
-                        AutoSize = true,
-                        Location = new Point(0, 100)
-                    };
-                    formPanel.Controls.Add(lblCapacity);
-
-                    var numCapacity = new NumericUpDown
-                    {
-                        Font = new Font("Montserrat", 9),
-                        Location = new Point(120, 96),
-                        Width = 100,
-                        Minimum = 0,
-                        Maximum = 100,
-                        Value = 20
-                    };
-                    formPanel.Controls.Add(numCapacity);
-
-                    var btnUpdate = new Button
-                    {
-                        Text = "Update Availability",
-                        Size = new Size(150, 35),
-                        BackColor = ColorTranslator.FromHtml("#99BC85"),
-                        ForeColor = Color.White,
-                        FlatStyle = FlatStyle.Flat,
-                        Location = new Point(120, 140)
-                    };
-                    btnUpdate.FlatAppearance.BorderSize = 0;
-
-                    btnUpdate.Click += (_, __) => {
-                        if (cmbService.SelectedItem == null)
+                        if (cmbHotel.SelectedItem is Hotel sel && dtp.Value != null)
                         {
-                            MessageBox.Show("Please select a service type.");
-                            return;
+                            var info = GetRoomAvailability(sel.HotelID, dtp.Value);
+                            lblAvail.Text = $"Total {info.TotalRooms}, Booked {info.BookedRooms}, Free {info.AvailableRooms}";
+
+                            var freeRooms = GetAvailableRooms(sel.HotelID, dtp.Value);
+                            lstRooms.DataSource = freeRooms;
+                            lstRooms.DisplayMember = "RoomNo";
+                            lstRooms.ValueMember = "RoomID";
+                            btnBook.Enabled = freeRooms.Any();
                         }
-
-                        string serviceType = cmbService.SelectedItem.ToString();
-                        string date = dtpDate.Value.ToString("yyyy-MM-dd");
-                        int capacity = (int)numCapacity.Value;
-
-                        MessageBox.Show($"Availability for {serviceType} on {date} updated to {capacity} slots.");
-                    };
-                    formPanel.Controls.Add(btnUpdate);
-
-                    flp.Controls.Add(formPanel);
-
-                    // Add service usage stats
-                    var statsTitle = new Label
-                    {
-                        Text = "Current Service Usage",
-                        Font = new Font("Montserrat", 12, FontStyle.Bold),
-                        AutoSize = true,
-                        Margin = new Padding(10, 0, 0, 10)
-                    };
-                    flp.Controls.Add(statsTitle);
-
-                    foreach (var group in serviceGroups)
-                    {
-                        var statsCard = new Panel
-                        {
-                            Width = flp.ClientSize.Width - flp.Padding.Horizontal,
-                            Height = 80,
-                            Margin = new Padding(0, 0, 0, 10),
-                            BackColor = ColorTranslator.FromHtml("#F8F9FA"), // light gray
-                            Padding = new Padding(15)
-                        };
-
-                        var lblServiceName = new Label
-                        {
-                            Text = group.ServiceType,
-                            Font = new Font("Montserrat", 11, FontStyle.Bold),
-                            AutoSize = true,
-                            Location = new Point(10, 10)
-                        };
-
-                        var lblBookings = new Label
-                        {
-                            Text = $"Total Bookings: {group.BookingCount} • Revenue: ${group.TotalRevenue:F2}",
-                            Font = new Font("Montserrat", 9),
-                            AutoSize = true,
-                            Location = new Point(10, 40)
-                        };
-
-                        statsCard.Controls.AddRange(new Control[] { lblServiceName, lblBookings });
-                        flp.Controls.Add(statsCard);
                     }
+
+                    cmbHotel.SelectedIndexChanged += (_, __) => refresh();
+                    dtp.ValueChanged += (_, __) => refresh();
+
+                    // Handle booking
+                    btnBook.Click += (_, __) =>
+                    {
+                        if (cmbHotel.SelectedItem is Hotel sel &&
+                            lstRooms.SelectedItem is Room room)
+                        {
+                            ReserveRoomWithTransaction(
+                                hotelId: sel.HotelID,
+                                serviceId: sel.ServiceID,
+                                roomId: room.RoomID,
+                                from: dtp.Value,
+                                to: dtp.Value
+                            );
+                            // then refresh your UI:
+                            refresh();
+                        }
+                    };
+
                 }
             };
 

@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.ListView;
 
 namespace TravelEaseForms.Forms
 {
@@ -98,7 +99,7 @@ namespace TravelEaseForms.Forms
                 {
                     connection.Open();
 
-                    // Corrected query - proper JOIN syntax
+
                     string query = @"SELECT u.UserID, u.Email, u.Name 
                                    FROM Users u 
                                    INNER JOIN ServiceProviders sp ON u.UserID = sp.UserID 
@@ -115,8 +116,11 @@ namespace TravelEaseForms.Forms
                             {
                                 // Login successful
                                 string userName = reader["Name"].ToString();
-                                MessageBox.Show($"Welcome Back, {userName}!", "Login Successful",
-                                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                UserSession.CurrentUserID = reader["UserID"].ToString();
+                                UserSession.CurrentUserEmail = reader["Email"].ToString();
+                                MessageBox.Show($"Login successful!\nUserID: {UserSession.CurrentUserID}\nEmail: {UserSession.CurrentUserEmail}", "Session Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                //MessageBox.Show($"Welcome Back, {userName}!", "Login Successful", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
 
                                 this.Hide();
                                 var dashboard = new SP_Main();
@@ -126,8 +130,7 @@ namespace TravelEaseForms.Forms
                             else
                             {
                                 // Login failed
-                                MessageBox.Show("Invalid email or password. Please try again.",
-                                    "Login Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                MessageBox.Show("Invalid email or password. Please try again.", "Login Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
                                 textBox2.Clear();
                                 textBox2.Focus();
                             }

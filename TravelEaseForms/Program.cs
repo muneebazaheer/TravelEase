@@ -5,8 +5,15 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using TravelEaseForms.Forms;
 
-namespace TravelEaseForms
-{
+namespace TravelEaseForms { 
+    public static class UserSession
+    {
+        public static string CurrentUserID { get; set; }
+        public static string CurrentUserEmail { get; set; }
+        public static string CurrentUserName { get; set; }
+        
+    }
+
     internal static class Program
     {
         /// <summary>
@@ -19,7 +26,7 @@ namespace TravelEaseForms
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            Application.Run(new SP_Login());
+            Application.Run(new Report());
         }
     }
 }
