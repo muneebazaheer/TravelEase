@@ -74,9 +74,7 @@ namespace TravelEaseForms.Forms
                     LEFT JOIN 
                         Rooms r ON h.HotelID = r.HotelID
                     LEFT JOIN 
-                        RoomReservations rr ON r.RoomID = rr.RoomID AND 
-                        rr.ReservedTill >= GETDATE() AND 
-                        rr.ReservedFrom <= GETDATE()
+                        RoomReservations rr ON r.RoomID = rr.RoomID 
                     GROUP BY 
                         h.HotelID, h.Name, h.Address
                     ORDER BY 
@@ -105,26 +103,25 @@ namespace TravelEaseForms.Forms
                 // SQL query to get Service Provider Ratings
                 // This joins Reviews with Guide information
                 string query = @"
-                    SELECT 
-                    sp.ProviderID,
-                    u.Name               AS ProviderName,
-                    AVG(r.Rating)        AS AverageRating,
-                    COUNT(r.ReviewID)   AS NumberOfReviews,
-                    MAX(r.Rating)        AS HighestRating,
-                    MIN(r.Rating)        AS LowestRating
+                  
+                SELECT 
+                    s.ServiceID,
+                    s.Name AS ProviderName ,
+                    AVG(r.Rating) AS AverageRating,
+                    COUNT(r.ReviewID) AS NumberOfReviews,
+                    MAX(r.Rating) AS HighestRating,
+                    MIN(r.Rating) AS LowestRating
                 FROM 
-                    ServiceProviders sp
-                JOIN
-                    Users u 
-                  ON sp.UserID = u.UserID
+                    Services s
                 LEFT JOIN 
                     Reviews r 
-                  ON r.UserID = sp.UserID
+                  ON r.ServiceID = s.ServiceID
                 GROUP BY 
-                    sp.ProviderID, 
-                    u.Name
+                    s.ServiceID,
+                    s.Name
                 ORDER BY 
-                    AverageRating DESC";
+                    AverageRating DESC;
+                ";
 
 
                 using (SqlCommand cmd = new SqlCommand(query, conn))
@@ -215,9 +212,9 @@ namespace TravelEaseForms.Forms
                 series.Points.AddXY(hotelName, occupancyRate);
 
                 // Add data point label
-                int lastIndex = series.Points.Count - 1;
-                series.Points[lastIndex].Label = $"{occupancyRate:F1}%";
-                series.Points[lastIndex].LabelForeColor = Color.Black;
+                //int lastIndex = series.Points.Count - 1;
+                //series.Points[lastIndex].Label = $"{occupancyRate:F1}%";
+                //series.Points[lastIndex].LabelForeColor = Color.Black;
             }
 
             // Chart title and formatting

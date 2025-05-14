@@ -26,7 +26,7 @@ namespace TravelEaseForms {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            Application.Run(new Report());
+            Application.Run(new SP_Login());
         }
     }
 }
