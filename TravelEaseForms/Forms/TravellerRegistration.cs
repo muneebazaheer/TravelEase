@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Data.SqlClient;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -15,80 +16,99 @@ namespace TravelEaseForms.Forms
         public TravellerRegistration()
         {
             InitializeComponent();
-            this.Load += TravellerRegistration_Load;
         }
 
         private void TravellerRegistration_Load(object sender, EventArgs e)
         {
-            this.Text = "User Registration";
-            this.Size = new Size(500, 600);
-            this.StartPosition = FormStartPosition.CenterScreen;
             this.BackColor = ColorTranslator.FromHtml("#FAF1E6");
-
-
-
-            string[] labels = {
-                "Full Name", "CNIC", "Date of Birth", "Nationality", "Email", "Password", "Confirm Password"
-            };
-
-            int y = 30;
-            int labelWidth = 120;
-            int textboxWidth = 250;
-
-            for (int i = 0; i < labels.Length; i++)
-            {
-                // Label
-                Label lbl = new Label();
-                lbl.Text = labels[i];
-                lbl.Location = new Point(50, y);
-                lbl.Size = new Size(labelWidth, 25);
-                lbl.Font = new Font("Segoe UI", 10, FontStyle.Regular);
-                this.Controls.Add(lbl);
-
-                // TextBox or DateTimePicker
-                Control input;
-                if (labels[i] == "Date of Birth")
-                {
-                    DateTimePicker dobPicker = new DateTimePicker();
-                    dobPicker.Location = new Point(180, y);
-                    dobPicker.Size = new Size(textboxWidth, 30);
-                    dobPicker.Format = DateTimePickerFormat.Short;
-                    input = dobPicker;
-                }
-                else
-                {
-                    TextBox txt = new TextBox();
-                    txt.Location = new Point(180, y);
-                    txt.Size = new Size(textboxWidth, 30);
-                    txt.Multiline = true;
-
-                    if (labels[i].ToLower().Contains("password"))
-                        txt.PasswordChar = '*';
-
-                    input = txt;
-                }
-
-                this.Controls.Add(input);
-                y += 50;
-            }
-
-            // Register Button
-            Button registerBtn = new Button();
-            registerBtn.Text = "Register";
-            registerBtn.Size = new Size(150, 40);
-            registerBtn.Location = new Point(170, y + 10);
-            registerBtn.BackColor = ColorTranslator.FromHtml("#99BC85");
-            registerBtn.ForeColor = Color.White;
-            registerBtn.FlatStyle = FlatStyle.Flat;
-            registerBtn.Font = new Font("Segoe UI", 10, FontStyle.Bold);
-            registerBtn.Click += RegisterBtn_Click;
-
-            this.Controls.Add(registerBtn);
+            RegisterButton.FlatStyle = FlatStyle.Flat;
+            RegisterButton.BackColor = ColorTranslator.FromHtml("#99BC85");
+            RegisterButton.ForeColor = Color.White;
+            TravelerRegistrationLabel.ForeColor = ColorTranslator.FromHtml("#99BC85");
+            LoginlinkLabel.LinkColor = ColorTranslator.FromHtml("#99BC85");
+            LoginlinkLabel.LinkBehavior = LinkBehavior.NeverUnderline;
         }
 
-        private void RegisterBtn_Click(object sender, EventArgs e)
+        private void LoginlinkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            MessageBox.Show("Registration Successful!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            //Craete an instance of the LoginForm
+            TravellerLogin loginForm = new TravellerLogin();
+            loginForm.Show();
+            this.Hide();
+        }
+
+        private void RegisterButton_Click(object sender, EventArgs e)
+        {
+            string name = nameTextbox.Text;
+            string email = emailtextbox.Text;
+            string password = passwordTextbox.Text;
+            string contact = textBox4.Text;
+            string address = textBox5.Text;
+            string cityCode = textBox6.Text;
+            DateTime dateTime = DateTime.Now;
+
+            string connectionString = "Data Source=MAHAD\\SQLEXPRESS01;Initial Catalog=TravelEaseDatabase;Integrated Security=True";
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                connection.Open();
+
+                // Insert into Users table
+                string userInsertQuery = @"
+                    INSERT INTO Users (CityCode, Email, Address, Name, ContactInfo, RegistrationDate)
+                    VALUES (@CityCode, @Email, @Address, @Name, @ContactInfo, @RegistrationDate);";
+
+
+                using (SqlCommand cmd = new SqlCommand(userInsertQuery, connection))
+                {
+                    cmd.Parameters.AddWithValue("@CityCode", cityCode);
+                    cmd.Parameters.AddWithValue("@Email", email);
+                    cmd.Parameters.AddWithValue("@Address", address);
+                    cmd.Parameters.AddWithValue("@Name", name);
+                    cmd.Parameters.AddWithValue("@ContactInfo", contact);
+                    cmd.Parameters.AddWithValue("@RegistrationDate", dateTime.Date);
+                    cmd.ExecuteNonQuery();
+                }
+
+                string userIDQuery = "SELECT UserID FROM Users WHERE Email = @Email";
+                string userID;
+                using (SqlCommand cmd = new SqlCommand(userIDQuery, connection))
+                {
+                    cmd.Parameters.AddWithValue("@Email", email);
+                    userID = (string)cmd.ExecuteScalar();
+                }
+
+                string personInsertQuery = @"
+                    INSERT INTO Persons (UserID, CNIC_SSN, Nationality, DOB)
+                    VALUES (@UserID, @CNIC_SSN, @Nationality, @DOB);
+                ";
+                using (SqlCommand cmd = new SqlCommand(personInsertQuery, connection))
+                {
+                    cmd.Parameters.AddWithValue("@UserID", userID);
+                    cmd.Parameters.AddWithValue("@CNIC_SSN", "example_cnic");
+                    cmd.Parameters.AddWithValue("@Nationality", "example_nationality");
+                    cmd.Parameters.AddWithValue("@DOB", DateTime.Now.Date);
+                    cmd.ExecuteNonQuery();
+                }
+
+                string travelerInsertQuery = @"
+                    INSERT INTO Traveler (UserID, LoginPassword)
+                    VALUES (@UserID, @LoginPassword);";
+
+                using (SqlCommand cmd = new SqlCommand(travelerInsertQuery, connection))
+                {
+                    cmd.Parameters.AddWithValue("@UserID", userID);
+                    cmd.Parameters.AddWithValue("@LoginPassword", password);
+                    cmd.ExecuteNonQuery();
+                }
+
+                MessageBox.Show("Registration successful!");
+            }
+
+            this.Hide();
+            TravellerLogin logintraveler = new TravellerLogin();
+            logintraveler.Show();
         }
     }
 }
+

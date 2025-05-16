@@ -9,20 +9,16 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-
 namespace TravelEaseForms.Forms
 {
-    public partial class TravellerLogin : Form
+    public partial class TourOperatorLogin : Form
     {
-        public TravellerLogin()
+        public TourOperatorLogin()
         {
             InitializeComponent();
-
-            // Optional: Move to Form Load to avoid Designer overwrites
-            this.Load += TravellerLogin_Load;
         }
 
-        private void TravellerLogin_Load(object sender, EventArgs e)
+        private void TourOperatorLogin_Load(object sender, EventArgs e)
         {
             LoginButton.FlatStyle = FlatStyle.Flat;
             LoginButton.BackColor = ColorTranslator.FromHtml("#99BC85");
@@ -33,22 +29,25 @@ namespace TravelEaseForms.Forms
             RegisterLinkLabel.LinkBehavior = LinkBehavior.NeverUnderline;
         }
 
-        private void label1_Click(object sender, EventArgs e)
+        private void RegisterLinkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-
+            TourOperatorRegistration registrationForm = new TourOperatorRegistration();
+            registrationForm.Show();
+            this.Hide();
         }
 
         private void LoginButton_Click(object sender, EventArgs e)
         {
+
             string connectionString = "Data Source=MAHAD\\SQLEXPRESS01;Initial Catalog=TravelEaseDatabase;Integrated Security=True";
             //string email = emailtextbox.Text;
             //string password = passwordtextbox.Text;
-            string email = "henry.lewis42@demo.org";
-            string password = "AZtravelSecure";
+            string email = "frank.wright2@example.com";
+            string password = "Password1";
 
             using (SqlConnection con = new SqlConnection(connectionString))
             {
-                string query = "SELECT COUNT(*) FROM Users U JOIN Traveler T ON U.UserID = T.UserID WHERE U.Email = @email AND T.LoginPassword = @password";
+                string query = "SELECT COUNT(*) FROM Users U JOIN TourOperators T ON U.UserID = T.UserID WHERE U.Email = @email AND T.LoginPassword = @password";
                 SqlCommand cmd = new SqlCommand(query, con);
                 cmd.Parameters.AddWithValue("@email", email);
                 cmd.Parameters.AddWithValue("@password", password);
@@ -65,7 +64,7 @@ namespace TravelEaseForms.Forms
                     // Fetch full user info
                     string userDetailsQuery = @"SELECT U.* 
                                                 FROM Users U 
-                                                JOIN Traveler T ON U.UserID = T.UserID 
+                                                JOIN TourOperators T ON U.UserID = T.UserID 
                                                 WHERE U.Email = @Email AND T.LoginPassword = @Password";
 
                     SqlCommand userCmd = new SqlCommand(userDetailsQuery, con);
@@ -85,29 +84,16 @@ namespace TravelEaseForms.Forms
                     //MessageBox.Show(SessionDetails.UserId);
                     //MessageBox.Show(SessionDetails.UserName);
                     //MessageBox.Show(SessionDetails.Address);
-
-                    TravelerDashboard travelerDashboard = new TravelerDashboard();
-                    travelerDashboard.Show();
+                    TourOperatorDashboard dashboardForm = new TourOperatorDashboard();
+                    dashboardForm.Show();
                     this.Hide();
+
                 }
                 else
                 {
                     MessageBox.Show("Invalid username or password.");
                 }
             }
-
-        }
-
-        private void TravellerLogin_Load_1(object sender, EventArgs e)
-        {
-           
-        }
-
-        private void RegisterLinkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-        {
-            TravellerRegistration travellerRegistration = new TravellerRegistration();
-            travellerRegistration.Show();
-            this.Hide();
         }
     }
 }

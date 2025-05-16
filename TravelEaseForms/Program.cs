@@ -18,7 +18,13 @@ namespace TravelEaseForms
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             //Application.Run(new TravellerLogin());
-            Application.Run(new TravellerRegistration());
+            //Application.Run(new TravellerRegistration());
+           // Application.Run(new TravelerDashboard());
+            TourOperatorLogin tourOperatorLogin = new TourOperatorLogin();
+            Application.Run(tourOperatorLogin);
+            tourOperatorLogin.Close();
+            //Application.Run(new TourOperatorRegistration());
+           // Application.Run(new TourOperatorDashboard());
 
         }
     }

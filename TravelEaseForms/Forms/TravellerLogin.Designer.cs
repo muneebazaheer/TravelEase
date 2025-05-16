@@ -31,8 +31,8 @@
             this.WelcomeLabel = new System.Windows.Forms.Label();
             this.EmailLabel = new System.Windows.Forms.Label();
             this.PasswordLabel = new System.Windows.Forms.Label();
-            this.maskedTextBox1 = new System.Windows.Forms.MaskedTextBox();
-            this.maskedTextBox2 = new System.Windows.Forms.MaskedTextBox();
+            this.emailtextbox = new System.Windows.Forms.MaskedTextBox();
+            this.passwordtextbox = new System.Windows.Forms.MaskedTextBox();
             this.LoginButton = new System.Windows.Forms.Button();
             this.RegisterLinkLabel = new System.Windows.Forms.LinkLabel();
             this.SuspendLayout();
@@ -41,10 +41,10 @@
             // 
             this.WelcomeLabel.AutoSize = true;
             this.WelcomeLabel.BackColor = System.Drawing.Color.Transparent;
-            this.WelcomeLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.WelcomeLabel.Font = new System.Drawing.Font("Montserrat", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.WelcomeLabel.Location = new System.Drawing.Point(217, 53);
             this.WelcomeLabel.Name = "WelcomeLabel";
-            this.WelcomeLabel.Size = new System.Drawing.Size(444, 46);
+            this.WelcomeLabel.Size = new System.Drawing.Size(490, 62);
             this.WelcomeLabel.TabIndex = 0;
             this.WelcomeLabel.Text = "Welcome to TravelEase";
             this.WelcomeLabel.Click += new System.EventHandler(this.label1_Click);
@@ -52,45 +52,46 @@
             // EmailLabel
             // 
             this.EmailLabel.AutoSize = true;
-            this.EmailLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.EmailLabel.Location = new System.Drawing.Point(220, 184);
+            this.EmailLabel.Font = new System.Drawing.Font("Montserrat", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.EmailLabel.Location = new System.Drawing.Point(210, 184);
             this.EmailLabel.Name = "EmailLabel";
-            this.EmailLabel.Size = new System.Drawing.Size(74, 29);
+            this.EmailLabel.Size = new System.Drawing.Size(84, 38);
             this.EmailLabel.TabIndex = 1;
             this.EmailLabel.Text = "Email";
             // 
             // PasswordLabel
             // 
             this.PasswordLabel.AutoSize = true;
-            this.PasswordLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.PasswordLabel.Location = new System.Drawing.Point(196, 249);
+            this.PasswordLabel.Font = new System.Drawing.Font("Montserrat", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.PasswordLabel.Location = new System.Drawing.Point(182, 243);
             this.PasswordLabel.Name = "PasswordLabel";
-            this.PasswordLabel.Size = new System.Drawing.Size(120, 29);
+            this.PasswordLabel.Size = new System.Drawing.Size(134, 38);
             this.PasswordLabel.TabIndex = 2;
             this.PasswordLabel.Text = "Password";
             // 
-            // maskedTextBox1
+            // emailtextbox
             // 
-            this.maskedTextBox1.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.maskedTextBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.maskedTextBox1.Location = new System.Drawing.Point(322, 184);
-            this.maskedTextBox1.Name = "maskedTextBox1";
-            this.maskedTextBox1.Size = new System.Drawing.Size(310, 25);
-            this.maskedTextBox1.TabIndex = 3;
+            this.emailtextbox.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.emailtextbox.Font = new System.Drawing.Font("Montserrat", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.emailtextbox.Location = new System.Drawing.Point(322, 189);
+            this.emailtextbox.Name = "emailtextbox";
+            this.emailtextbox.Size = new System.Drawing.Size(310, 25);
+            this.emailtextbox.TabIndex = 3;
             // 
-            // maskedTextBox2
+            // passwordtextbox
             // 
-            this.maskedTextBox2.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.maskedTextBox2.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.maskedTextBox2.Location = new System.Drawing.Point(322, 249);
-            this.maskedTextBox2.Name = "maskedTextBox2";
-            this.maskedTextBox2.PasswordChar = '*';
-            this.maskedTextBox2.Size = new System.Drawing.Size(310, 25);
-            this.maskedTextBox2.TabIndex = 4;
+            this.passwordtextbox.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.passwordtextbox.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.passwordtextbox.Location = new System.Drawing.Point(322, 250);
+            this.passwordtextbox.Name = "passwordtextbox";
+            this.passwordtextbox.PasswordChar = '*';
+            this.passwordtextbox.Size = new System.Drawing.Size(310, 23);
+            this.passwordtextbox.TabIndex = 4;
             // 
             // LoginButton
             // 
-            this.LoginButton.Location = new System.Drawing.Point(368, 336);
+            this.LoginButton.Font = new System.Drawing.Font("Montserrat", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.LoginButton.Location = new System.Drawing.Point(384, 330);
             this.LoginButton.Name = "LoginButton";
             this.LoginButton.Size = new System.Drawing.Size(117, 55);
             this.LoginButton.TabIndex = 5;
@@ -102,11 +103,11 @@
             // 
             this.RegisterLinkLabel.ActiveLinkColor = System.Drawing.Color.White;
             this.RegisterLinkLabel.AutoSize = true;
-            this.RegisterLinkLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.RegisterLinkLabel.Font = new System.Drawing.Font("Montserrat", 11F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.RegisterLinkLabel.LinkColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(128)))));
-            this.RegisterLinkLabel.Location = new System.Drawing.Point(342, 437);
+            this.RegisterLinkLabel.Location = new System.Drawing.Point(356, 418);
             this.RegisterLinkLabel.Name = "RegisterLinkLabel";
-            this.RegisterLinkLabel.Size = new System.Drawing.Size(155, 26);
+            this.RegisterLinkLabel.Size = new System.Drawing.Size(171, 34);
             this.RegisterLinkLabel.TabIndex = 6;
             this.RegisterLinkLabel.TabStop = true;
             this.RegisterLinkLabel.Text = "Register Now";
@@ -122,8 +123,8 @@
             this.Controls.Add(this.PasswordLabel);
             this.Controls.Add(this.EmailLabel);
             this.Controls.Add(this.WelcomeLabel);
-            this.Controls.Add(this.maskedTextBox1);
-            this.Controls.Add(this.maskedTextBox2);
+            this.Controls.Add(this.emailtextbox);
+            this.Controls.Add(this.passwordtextbox);
             this.Name = "TravellerLogin";
             this.Text = "TravellerLogin";
             this.Load += new System.EventHandler(this.TravellerLogin_Load_1);
@@ -137,8 +138,8 @@
         private System.Windows.Forms.Label WelcomeLabel;
         private System.Windows.Forms.Label EmailLabel;
         private System.Windows.Forms.Label PasswordLabel;
-        private System.Windows.Forms.MaskedTextBox maskedTextBox1;
-        private System.Windows.Forms.MaskedTextBox maskedTextBox2;
+        private System.Windows.Forms.MaskedTextBox emailtextbox;
+        private System.Windows.Forms.MaskedTextBox passwordtextbox;
         private System.Windows.Forms.Button LoginButton;
         private System.Windows.Forms.LinkLabel RegisterLinkLabel;
     }
